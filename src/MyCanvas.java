@@ -9,13 +9,13 @@ public class MyCanvas extends Canvas {
 	
     private Box[] boxes;
     private String password = "babe10ued";
-    private String cryptedMessage = "************";
+    private String cryptedMessage = "###########";
     private PasswordManager manager; 
     
     private int numberOfPasses = 5;
     
     private int boxesWidth = 200;
-    private int boxesHeight = 100;
+    private int boxesHeight = 75;
     private int boxesSpacing = 150;
     private int firstBoxTopX = 50;
     private int firstBoxTopY = 50;
@@ -28,7 +28,7 @@ public class MyCanvas extends Canvas {
             String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
             String passwordEx = "test " + String.valueOf(i);
             int shift = boxesSpacing*i;
-        	manager.addLocalPasscode(passwordEx,websiteEx);
+        	manager.addLocalPasscode(websiteEx,passwordEx);
         	boxes[i] = new Box(websiteEx,cryptedMessage,firstBoxTopX,firstBoxTopY+shift,boxesWidth,boxesHeight,boxesSpacing);
         }
         // Add a mouse listener to handle mouse clicks
@@ -90,12 +90,12 @@ public class MyCanvas extends Canvas {
         
         
         // Draw a rectangle
-        for(int i =0;i<numberOfPasses;i++) {
+        for(Box box : boxes) {
         	g.setColor(Color.RED);
-        	int shift = boxesSpacing*i;
-        	g.fillRect(firstBoxTopX, firstBoxTopY+shift, boxesWidth, boxesHeight);
+        	g.fillRect(box.boxTopX, box.boxTopY, boxesWidth, boxesHeight);
         	g.setColor(Color.BLACK);
-        	g.drawString(boxes[i].message, 125, 100+shift);
+            int[] center = box.messageCenter();
+        	g.drawString(box.message, center[0], center[1]);
         }
         
     }

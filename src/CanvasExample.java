@@ -14,7 +14,7 @@ public class CanvasExample {
         frame.add(canvas);
 
         // Set the size of the frame
-        frame.setSize(minRes[0], minRes[1]);
+        frame.setSize(minRes[0]+100, minRes[1]+100);
 
         // Make the frame visible
         frame.setVisible(true);
