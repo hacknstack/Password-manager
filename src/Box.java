@@ -1,29 +1,30 @@
 
 public class Box {
-    public int boxWidth;
-    public int boxHeight;
-    public int boxTopX;
-    public int boxTopY;
+    private int charSize = 3;
+
+    public int width;
+    public int height;
+    public int topX;
+    public int topY;
     public String message;
     private String website;
-    private int charSize = 3;
-    public Box(String website,String message,int boxTopX,int boxTopY,int boxWidth,int boxHeight,int boxSpacing){
+    public Box(String website,String message,int topX,int topY,int width,int height){
         this.website = website;
         this.message = message;
-        this.boxWidth = boxWidth;
-        this.boxHeight = boxHeight;
-        this.boxTopX = boxTopX;
-        this.boxTopY = boxTopY;
+        this.width = width;
+        this.height = height;
+        this.topX = topX;
+        this.topY = topY;
     }
     public boolean isPositionOnTheBox(int x,int y){
-        return x>=boxTopX && x<=boxWidth+boxTopX && y>=boxTopY && y<=boxTopY+boxHeight;
+        return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
     }
     public String getWebsite(){
         return website;
     }
     public int[] messageCenter(){
-        int centerX= boxTopX+boxWidth/2 - message.length()*charSize;
-        int centerY= boxTopY+boxHeight/2;
+        int centerX= topX+width/2 - message.length()*charSize;
+        int centerY= topY+height/2;
         int[] out = {centerX,centerY};
         return out;
     }

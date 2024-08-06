@@ -5,39 +5,45 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 public class MyCanvas extends Canvas {
 	
-    private Box[] boxes;
+    private PasswordBox[] passwordBoxes;
     private String password = "babe10ued";
     private String cryptedMessage = "###########";
     private PasswordManager manager; 
     
     private int numberOfPasses = 5;
     
-    private int boxesWidth = 200;
-    private int boxesHeight = 55;
-    private int boxesSpacing = 50;
-    private int firstBoxTopX = 50;
-    private int firstBoxTopY = 50;
     
+    private int passwordBoxesSpacing = 25;
+
+    private int firstpasswordBoxTopX = 50;
+    private int firstpasswordBoxTopY = 50;
+    private int passwordBoxesWidth = 200;
+    private int passwordBoxesHeight = 60;
+    
+    private int copyToClipboardWidth = 40;
 
     public MyCanvas() {
     	manager = new PasswordManager(password);
-    	boxes = new Box[numberOfPasses];
+    	passwordBoxes = new PasswordBox[numberOfPasses];
         for(int i =0;i<numberOfPasses;i++) {
             String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
             String passwordEx = "test " + String.valueOf(i);
-            int shift = (boxesSpacing+boxesHeight)*i;
+            int shift = (passwordBoxesSpacing+passwordBoxesHeight)*i;
         	manager.addLocalPasscode(websiteEx,passwordEx);
-        	boxes[i] = new Box(websiteEx,cryptedMessage,firstBoxTopX,firstBoxTopY+shift,boxesWidth,boxesHeight,boxesSpacing);
+        	passwordBoxes[i] = new PasswordBox(websiteEx,cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,copyToClipboardWidth);
         }
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-            	for(Box box : boxes) {
-                	if(box.isPositionOnTheBox(e.getX(), e.getY())) {
-                		box.message = manager.unveil(password,box.getWebsite());
+            	for(PasswordBox passwordBox : passwordBoxes) {
+                	if(passwordBox.isPositionOnTheBox(e.getX(), e.getY())) {
+                		passwordBox.message = manager.unveil(password,passwordBox.getWebsite());
                     }
             	}
             	// Repaint the canvas to reflect the change
@@ -45,8 +51,8 @@ public class MyCanvas extends Canvas {
             }
             @Override
             public void mouseReleased(MouseEvent e) {
-            	for(Box box : boxes) {
-                	box.message=cryptedMessage;
+            	for(PasswordBox passwordBox : passwordBoxes) {
+                	passwordBox.message=cryptedMessage;
                 	
                 }
                 repaint();
@@ -79,9 +85,14 @@ public class MyCanvas extends Canvas {
     }
 
     // A helper method to check if a character is printable
-    private boolean isPrintableChar(char c) {
+    private static boolean isPrintableChar(char c) {
         Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
         return !Character.isISOControl(c) && block != null && block != Character.UnicodeBlock.SPECIALS;
+    }
+    public static void copyToClipboard(String input) {
+        StringSelection stringSelection = new StringSelection(input);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
     }
 
     @Override
@@ -90,18 +101,18 @@ public class MyCanvas extends Canvas {
         
         
         // Draw a rectangle
-        for(Box box : boxes) {
+        for(PasswordBox passwordBox : passwordBoxes) {
         	g.setColor(Color.lightGray);
-        	g.fillRect(box.boxTopX, box.boxTopY, boxesWidth, boxesHeight);
+        	g.fillRect(passwordBox.topX, passwordBox.topY, passwordBoxesWidth, passwordBoxesHeight);
         	g.setColor(Color.BLACK);
-            int[] center = box.messageCenter();
-        	g.drawString(box.message, center[0], center[1]);
+            int[] center = passwordBox.messageCenter();
+        	g.drawString(passwordBox.message, center[0], center[1]);
         }
         
     }
     public int[] minimumNeededResolution() {
-    	int Width = firstBoxTopX + boxesWidth;
-    	int Height = firstBoxTopY + boxesHeight*numberOfPasses + boxesSpacing*(numberOfPasses-1);
+    	int Width = firstpasswordBoxTopX + passwordBoxesWidth;
+    	int Height = firstpasswordBoxTopY + passwordBoxesHeight*numberOfPasses + passwordBoxesSpacing*(numberOfPasses-1);
     	int[] out = {Width,Height};
     	System.out.print(Height);
     	return out;
