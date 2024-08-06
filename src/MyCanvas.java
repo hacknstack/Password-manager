@@ -7,54 +7,49 @@ import java.awt.*;
 import java.awt.event.*;
 public class MyCanvas extends Canvas {
 	
-    private String[] messages;
+    private Box[] boxes;
     private String password = "babe10ued";
     private String cryptedMessage = "************";
-    private Password[] passes; 
+    private PasswordManager manager; 
     
     private int numberOfPasses = 5;
     
-    private int boxWidth = 200;
-    private int boxHeight = 100;
-    private int boxSpacing = 150;
-    private int boxTopX = 50;
-    private int boxTopY = 50;
+    private int boxesWidth = 200;
+    private int boxesHeight = 100;
+    private int boxesSpacing = 150;
+    private int firstBoxTopX = 50;
+    private int firstBoxTopY = 50;
     
 
     public MyCanvas() {
-    	passes = new Password[numberOfPasses];
-    	messages = new String[numberOfPasses];
-        for(int i =0;i<passes.length;i++) {
-        	passes[i] = new Password(password,"test "+String.valueOf(i));
-        	messages[i]=cryptedMessage;
-        	
+    	manager = new PasswordManager(password);
+    	boxes = new Box[numberOfPasses];
+        for(int i =0;i<numberOfPasses;i++) {
+            String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
+            String passwordEx = "test " + String.valueOf(i);
+            int shift = boxesSpacing*i;
+        	manager.addLocalPasscode(passwordEx,websiteEx);
+        	boxes[i] = new Box(websiteEx,cryptedMessage,firstBoxTopX,firstBoxTopY+shift,boxesWidth,boxesHeight,boxesSpacing);
         }
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-            	for(int i =0;i<passes.length;i++) {
-                	int shift = boxSpacing*i;
-                	if(e.getX()>=boxTopX && e.getX()<=boxWidth+boxTopX && e.getY()>=boxTopY+shift && e.getY()<=boxTopY+shift+boxHeight) {
-                		
-                		if(messages[i] == passes[i].Unveil(password)) {
-                			messages[i] = cryptedMessage;
-                		}
-                		else {
-                			messages[i] = passes[i].Unveil(password);
-                		}
-                	}
-                
+            	for(Box box : boxes) {
+                	if(box.isPositionOnTheBox(e.getX(), e.getY())) {
+                		box.message = manager.unveil(password,box.getWebsite());
+                    }
             	}
             	// Repaint the canvas to reflect the change
             	repaint();
             }
             @Override
             public void mouseReleased(MouseEvent e) {
-            	for(int i =0;i<passes.length;i++) {
-                	messages[i]=cryptedMessage;
+            	for(Box box : boxes) {
+                	box.message=cryptedMessage;
                 	
                 }
+                repaint();
             }
         });
      /* Add a key listener to handle key events
@@ -95,18 +90,18 @@ public class MyCanvas extends Canvas {
         
         
         // Draw a rectangle
-        for(int i =0;i<passes.length;i++) {
+        for(int i =0;i<numberOfPasses;i++) {
         	g.setColor(Color.RED);
-        	int shift = boxSpacing*i;
-        	g.fillRect(boxTopX, boxTopY+shift, boxWidth, boxHeight);
+        	int shift = boxesSpacing*i;
+        	g.fillRect(firstBoxTopX, firstBoxTopY+shift, boxesWidth, boxesHeight);
         	g.setColor(Color.BLACK);
-        	g.drawString(messages[i], 125, 100+shift);
+        	g.drawString(boxes[i].message, 125, 100+shift);
         }
         
     }
     public int[] minimumNeededResolution() {
-    	int Width = boxTopX + boxWidth;
-    	int Height = boxTopY + boxHeight*numberOfPasses + boxSpacing*(numberOfPasses-1);
+    	int Width = firstBoxTopX + boxesWidth;
+    	int Height = firstBoxTopY + boxesHeight*numberOfPasses + boxesSpacing*(numberOfPasses-1);
     	int[] out = {Width,Height};
     	System.out.print(Height);
     	return out;

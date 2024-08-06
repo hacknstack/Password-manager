@@ -1,4 +1,5 @@
 import java.util.HashMap;
+
 public class PasswordManager {
 	private int hashcode;
 	private HashMap<String, String> localPasscodes;
