@@ -15,8 +15,8 @@ public class MyCanvas extends Canvas {
     private int numberOfPasses = 5;
     
     private int boxesWidth = 200;
-    private int boxesHeight = 75;
-    private int boxesSpacing = 150;
+    private int boxesHeight = 55;
+    private int boxesSpacing = 50;
     private int firstBoxTopX = 50;
     private int firstBoxTopY = 50;
     
@@ -27,7 +27,7 @@ public class MyCanvas extends Canvas {
         for(int i =0;i<numberOfPasses;i++) {
             String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
             String passwordEx = "test " + String.valueOf(i);
-            int shift = boxesSpacing*i;
+            int shift = (boxesSpacing+boxesHeight)*i;
         	manager.addLocalPasscode(websiteEx,passwordEx);
         	boxes[i] = new Box(websiteEx,cryptedMessage,firstBoxTopX,firstBoxTopY+shift,boxesWidth,boxesHeight,boxesSpacing);
         }
@@ -91,7 +91,7 @@ public class MyCanvas extends Canvas {
         
         // Draw a rectangle
         for(Box box : boxes) {
-        	g.setColor(Color.RED);
+        	g.setColor(Color.lightGray);
         	g.fillRect(box.boxTopX, box.boxTopY, boxesWidth, boxesHeight);
         	g.setColor(Color.BLACK);
             int[] center = box.messageCenter();

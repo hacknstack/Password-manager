@@ -2,7 +2,6 @@
 public class Box {
     public int boxWidth;
     public int boxHeight;
-    public int boxSpacing;
     public int boxTopX;
     public int boxTopY;
     public String message;
@@ -13,7 +12,6 @@ public class Box {
         this.message = message;
         this.boxWidth = boxWidth;
         this.boxHeight = boxHeight;
-        this.boxSpacing = boxSpacing;
         this.boxTopX = boxTopX;
         this.boxTopY = boxTopY;
     }
