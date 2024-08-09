@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Stack;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.Toolkit;
@@ -33,9 +34,10 @@ public class MyCanvas extends Canvas {
             String passwordEx = "test " + String.valueOf(i);
             shift = (passwordBoxesSpacing+passwordBoxesHeight)*i;
         	manager.addLocalPasscode(websiteEx,passwordEx);
-        	passwordBoxes[i] = new PasswordBox(websiteEx,cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,copyToClipboardWidth);
+        	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,websiteEx,copyToClipboardWidth);
         }
-        messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight);
+        shift+=passwordBoxesSpacing+passwordBoxesHeight;
+        messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
@@ -45,10 +47,13 @@ public class MyCanvas extends Canvas {
             	for(PasswordBox passwordBox : passwordBoxes) {
                 	if(passwordBox.isPositionOnTheBox(x,y)) {
                 		passwordBox.message = manager.unveil(password,passwordBox.getWebsite());
+                        messageBox.message = "";
+                        break;
                     }
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
                         copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
                         messageBox.message = "Copied!";
+                        break;
                     }
                     else{
                         messageBox.message = "Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")";
@@ -106,37 +111,29 @@ public class MyCanvas extends Canvas {
     @Override
     public void paint(Graphics g) {
         // Set the color for the drawing
-        
-        
-        // Draw a rectangle
+        // Draw thoses rectangles
         for(PasswordBox passwordBox : passwordBoxes) {
+
             //draw password boxes
-        	g.setColor(Color.lightGray);
-        	g.fillRect(passwordBox.topX, passwordBox.topY, passwordBoxesWidth, passwordBoxesHeight);
-        	g.setColor(Color.BLACK);
-            int[] center = passwordBox.messageCenter();
-        	g.drawString(passwordBox.message, center[0], center[1]);
+        	drawBox(g, passwordBox);
 
             //Draw copy To clipboard boxes
             Box copyBox = passwordBox.copyToClipboardBox();
-            g.setColor(Color.getHSBColor(20,20,20));
-            g.fillRect(copyBox.topX, copyBox.topY, copyBox.width, copyBox.height);
-            g.setColor(Color.BLACK);
-            center = copyBox.messageCenter();
-        	g.drawString(copyBox.message, center[0], center[1]);
-
+            drawBox(g, copyBox);
         }
         //Draw message Box:
-        g.setColor(Color.WHITE);
-        g.fillRect(messageBox.topX, messageBox.topY, messageBox.width, messageBox.height);
-        g.setColor(Color.BLACK);
-        int [] center = messageBox.messageCenter();
-        g.drawString(messageBox.message, center[0], center[1]);
-        
+        drawBox(g, messageBox);
+    }
+    public void drawBox(Graphics g,Box box) {
+        g.setColor(box.backgroundColor);
+        g.fillRect(box.topX, box.topY, box.width, box.height);
+        g.setColor(box.textColor);
+        int[] center = box.messageCenter();
+        g.drawString(box.message, center[0], center[1]);
     }
     public int[] minimumNeededResolution() {
     	int Width = firstpasswordBoxTopX + passwordBoxesWidth;
-    	int Height = firstpasswordBoxTopY + passwordBoxesHeight*numberOfPasses + passwordBoxesSpacing*(numberOfPasses-1);
+    	int Height = firstpasswordBoxTopY + passwordBoxesHeight*(numberOfPasses+1) + passwordBoxesSpacing*numberOfPasses;
     	int[] out = {Width,Height};
     	return out;
     }
