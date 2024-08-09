@@ -14,36 +14,44 @@ public class MyCanvas extends Canvas {
     private String password = "babe10ued";
     private String cryptedMessage = "###########";
     private PasswordManager manager; 
+    private Box messageBox;
     
-    private int numberOfPasses = 5;
-    
-    
+    private int numberOfPasses = 10;
     private int passwordBoxesSpacing = 25;
-
     private int firstpasswordBoxTopX = 50;
     private int firstpasswordBoxTopY = 50;
-    private int passwordBoxesWidth = 200;
+    private int passwordBoxesWidth = 300;
     private int passwordBoxesHeight = 60;
-    
     private int copyToClipboardWidth = 40;
 
     public MyCanvas() {
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
+        int shift = 0;
         for(int i =0;i<numberOfPasses;i++) {
             String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
             String passwordEx = "test " + String.valueOf(i);
-            int shift = (passwordBoxesSpacing+passwordBoxesHeight)*i;
+            shift = (passwordBoxesSpacing+passwordBoxesHeight)*i;
         	manager.addLocalPasscode(websiteEx,passwordEx);
         	passwordBoxes[i] = new PasswordBox(websiteEx,cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,copyToClipboardWidth);
         }
+        messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight);
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
+                int x = e.getX();
+                int y = e.getY();
             	for(PasswordBox passwordBox : passwordBoxes) {
-                	if(passwordBox.isPositionOnTheBox(e.getX(), e.getY())) {
+                	if(passwordBox.isPositionOnTheBox(x,y)) {
                 		passwordBox.message = manager.unveil(password,passwordBox.getWebsite());
+                    }
+                    else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
+                        copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
+                        messageBox.message = "Copied!";
+                    }
+                    else{
+                        messageBox.message = "Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")";
                     }
             	}
             	// Repaint the canvas to reflect the change
@@ -102,19 +110,34 @@ public class MyCanvas extends Canvas {
         
         // Draw a rectangle
         for(PasswordBox passwordBox : passwordBoxes) {
+            //draw password boxes
         	g.setColor(Color.lightGray);
         	g.fillRect(passwordBox.topX, passwordBox.topY, passwordBoxesWidth, passwordBoxesHeight);
         	g.setColor(Color.BLACK);
             int[] center = passwordBox.messageCenter();
         	g.drawString(passwordBox.message, center[0], center[1]);
+
+            //Draw copy To clipboard boxes
+            Box copyBox = passwordBox.copyToClipboardBox();
+            g.setColor(Color.getHSBColor(20,20,20));
+            g.fillRect(copyBox.topX, copyBox.topY, copyBox.width, copyBox.height);
+            g.setColor(Color.BLACK);
+            center = copyBox.messageCenter();
+        	g.drawString(copyBox.message, center[0], center[1]);
+
         }
+        //Draw message Box:
+        g.setColor(Color.WHITE);
+        g.fillRect(messageBox.topX, messageBox.topY, messageBox.width, messageBox.height);
+        g.setColor(Color.BLACK);
+        int [] center = messageBox.messageCenter();
+        g.drawString(messageBox.message, center[0], center[1]);
         
     }
     public int[] minimumNeededResolution() {
     	int Width = firstpasswordBoxTopX + passwordBoxesWidth;
     	int Height = firstpasswordBoxTopY + passwordBoxesHeight*numberOfPasses + passwordBoxesSpacing*(numberOfPasses-1);
     	int[] out = {Width,Height};
-    	System.out.print(Height);
     	return out;
     }
 }

@@ -16,11 +16,9 @@ public class PasswordManager {
 			if (localPasscodes.containsKey(website)){
 				return localPasscodes.get(website);
 			}
-			else{
-				return "website not found";
-			}
+			return "website not found";
 		}
-		return "password wrong";
+		return "wrong password";
 	}
 	private int hashFun(String s) {
 		return s.hashCode();

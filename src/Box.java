@@ -7,9 +7,7 @@ public class Box {
     public int topX;
     public int topY;
     public String message;
-    private String website;
-    public Box(String website,String message,int topX,int topY,int width,int height){
-        this.website = website;
+    public Box(String message,int topX,int topY,int width,int height){
         this.message = message;
         this.width = width;
         this.height = height;
@@ -18,9 +16,6 @@ public class Box {
     }
     public boolean isPositionOnTheBox(int x,int y){
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
-    }
-    public String getWebsite(){
-        return website;
     }
     public int[] messageCenter(){
         int centerX= topX+width/2 - message.length()*charSize;
