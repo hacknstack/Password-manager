@@ -10,22 +10,21 @@ public class Box {
     public Color backgroundColor;
     public Color textColor;
     public Box(String message,int topX,int topY,int width,int height,Color backgroundColor,Color textColor){
-        this.message = message;
-        this.width = width;
-        this.height = height;
-        this.topX = topX;
-        this.topY = topY;
-        this.backgroundColor=backgroundColor;
-        this.textColor=textColor;
+        if(width>0&&height>0&&topX>=0&&topY>=0){
+            this.message = message;
+            this.width = width;
+            this.height = height;
+            this.topX = topX;
+            this.topY = topY;
+            this.backgroundColor=backgroundColor;
+            this.textColor=textColor;
+        }
+        else{
+            throw new IllegalArgumentException("parts of the box are negative integers");
+        }
     }
     public Box(String message,int topX,int topY,int width,int height){
-        this.message = message;
-        this.width = width;
-        this.height = height;
-        this.topX = topX;
-        this.topY = topY;
-        this.backgroundColor=Color.lightGray;
-        this.textColor=Color.BLACK;
+        this(message,topX,topY,width,height,Color.lightGray,Color.BLACK);
     }
     public boolean isPositionOnTheBox(int x,int y){
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;

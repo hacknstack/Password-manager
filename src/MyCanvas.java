@@ -10,31 +10,33 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 public class MyCanvas extends Canvas {
-	
+	private Box inputBox;
     private PasswordBox[] passwordBoxes;
     private String password = "babe10ued";
     private String cryptedMessage = "###########";
     private PasswordManager manager; 
     private Box messageBox;
-    
-    private int numberOfPasses = 10;
+    private int inputBoxHeight = 35;
+    private int numberOfPasses = 7;
     private int passwordBoxesSpacing = 25;
     private int firstpasswordBoxTopX = 50;
     private int firstpasswordBoxTopY = 50;
-    private int passwordBoxesWidth = 300;
-    private int passwordBoxesHeight = 60;
+    private int passwordBoxesWidth = 250;
+    private int passwordBoxesHeight = 50;
     private int copyToClipboardWidth = 40;
 
     public MyCanvas() {
+        inputBox = new Box(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight,Color.WHITE,Color.BLACK);
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
-        int shift = 0;
+        int shift = inputBoxHeight+passwordBoxesSpacing;
         for(int i =0;i<numberOfPasses;i++) {
             String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
             String passwordEx = "test " + String.valueOf(i);
-            shift = (passwordBoxesSpacing+passwordBoxesHeight)*i;
+            
         	manager.addLocalPasscode(websiteEx,passwordEx);
         	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,websiteEx,copyToClipboardWidth);
+            shift += (passwordBoxesSpacing+passwordBoxesHeight);
         }
         shift+=passwordBoxesSpacing+passwordBoxesHeight;
         messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
@@ -48,6 +50,7 @@ public class MyCanvas extends Canvas {
                 	if(passwordBox.isPositionOnTheBox(x,y)) {
                 		passwordBox.message = manager.unveil(password,passwordBox.getWebsite());
                         messageBox.message = "";
+                        drawBox(getGraphics(), passwordBox);
                         break;
                     }
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
@@ -55,20 +58,27 @@ public class MyCanvas extends Canvas {
                         messageBox.message = "Copied!";
                         break;
                     }
+                    else if(inputBox.isPositionOnTheBox(x, y)){
+                        
+                    }
                     else{
                         messageBox.message = "Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")";
+                        
                     }
             	}
+                drawBox(getGraphics(), messageBox);
             	// Repaint the canvas to reflect the change
-            	repaint();
             }
             @Override
             public void mouseReleased(MouseEvent e) {
             	for(PasswordBox passwordBox : passwordBoxes) {
-                	passwordBox.message=cryptedMessage;
+                    if(passwordBox.message!=cryptedMessage){
+                        passwordBox.message=cryptedMessage;
+                        drawBox(getGraphics(), passwordBox);
+                    }
+                	
                 	
                 }
-                repaint();
             }
         });
      /* Add a key listener to handle key events
@@ -110,6 +120,7 @@ public class MyCanvas extends Canvas {
 
     @Override
     public void paint(Graphics g) {
+        drawBox(g, inputBox);
         // Set the color for the drawing
         // Draw thoses rectangles
         for(PasswordBox passwordBox : passwordBoxes) {
@@ -132,9 +143,7 @@ public class MyCanvas extends Canvas {
         g.drawString(box.message, center[0], center[1]);
     }
     public int[] minimumNeededResolution() {
-    	int Width = firstpasswordBoxTopX + passwordBoxesWidth;
-    	int Height = firstpasswordBoxTopY + passwordBoxesHeight*(numberOfPasses+1) + passwordBoxesSpacing*numberOfPasses;
-    	int[] out = {Width,Height};
+    	int[] out = {messageBox.width+messageBox.topX,messageBox.height+messageBox.topY};
     	return out;
     }
 }
