@@ -1,6 +1,6 @@
 import java.awt.Color;
 public class Box {
-    private int charSize = 3;
+    private float charSize = 78.0f/11.0f;
 
     public int width;
     public int height;
@@ -30,7 +30,7 @@ public class Box {
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
     }
     public int[] messageCenter(){
-        int centerX= topX+width/2 - message.length()*charSize;
+        int centerX= Math.round(topX+width/2 - message.length()*charSize/2);
         int centerY= topY+height/2;
         int[] out = {centerX,centerY};
         return out;

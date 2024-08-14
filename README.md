@@ -4,4 +4,4 @@
 An application that simplifies and securize the management of multiple passwords
 
 ### To fix:
-    - text isn't perfectly centered (need to use float and round fonctions)
+    - add a real cryptographic security for stored passwords
