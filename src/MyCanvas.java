@@ -10,9 +10,9 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 public class MyCanvas extends Canvas {
-	private Box inputBox;
+	private InputBox inputBox;
     private PasswordBox[] passwordBoxes;
-    private String password = "babe10ued";
+    private String password="babe10ued";
     private String cryptedMessage = "###########";
     private PasswordManager manager; 
     private Box messageBox;
@@ -26,7 +26,7 @@ public class MyCanvas extends Canvas {
     private int copyToClipboardWidth = 40;
 
     public MyCanvas() {
-        inputBox = new Box(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight,Color.WHITE,Color.BLACK);
+        inputBox = new InputBox(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
         int shift = inputBoxHeight+passwordBoxesSpacing;
@@ -40,6 +40,7 @@ public class MyCanvas extends Canvas {
         }
         shift+=passwordBoxesSpacing+passwordBoxesHeight;
         messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
+        password=inputBox.message;
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
@@ -55,11 +56,17 @@ public class MyCanvas extends Canvas {
                     }
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
                         copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
-                        messageBox.message = "Copied!";
+                        if(manager.canUnveil(password, passwordBox.getWebsite())){
+                            messageBox.message = "Copied!";
+                        }
+                        else{
+                            messageBox.message = "Invalid action!";
+                        }
                         break;
                     }
                     else if(inputBox.isPositionOnTheBox(x, y)){
-                        
+                        messageBox.message = "Write something !";
+                        break;
                     }
                     else{
                         messageBox.message = "Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")";
@@ -75,36 +82,39 @@ public class MyCanvas extends Canvas {
                     if(passwordBox.message!=cryptedMessage){
                         passwordBox.message=cryptedMessage;
                         drawBox(getGraphics(), passwordBox);
+                        break;
                     }
                 	
                 	
                 }
             }
         });
-     /* Add a key listener to handle key events
+     // Add a key listener to handle key events
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 char ch = e.getKeyChar();
                 if (Character.isLetterOrDigit(ch) || Character.isSpaceChar(ch) || isPrintableChar(ch)) {
                     // Only append if it's a printable character
-                    message += ch;
+                    inputBox.addChar(ch);
+                    password=inputBox.message;
                     // Repaint the canvas to reflect the change
-                    repaint();
+                    drawBox(getGraphics(), inputBox);
                 }
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
                 int keyCode = e.getKeyCode();
-                if (keyCode == KeyEvent.VK_BACK_SPACE && message.length() > 0) {
+                if (keyCode == KeyEvent.VK_BACK_SPACE) {
                     // Handle backspace to remove the last character
-                    message = message.substring(0, message.length() - 1);
+                    inputBox.deleteChar();
+                    password=inputBox.message;
                     // Repaint the canvas to reflect the change
-                    repaint();
+                    drawBox(getGraphics(), inputBox);
                 }
             }
-        });*/
+        });
     }
 
     // A helper method to check if a character is printable

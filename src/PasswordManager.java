@@ -20,6 +20,14 @@ public class PasswordManager {
 		}
 		return "wrong password";
 	}
+	public Boolean canUnveil(String GlobalPasscode,String website) {
+		if (hashFun(GlobalPasscode)==hashcode){
+			if (localPasscodes.containsKey(website)){
+				return true;
+			}
+		}
+		return false;
+	}
 	private int hashFun(String s) {
 		return s.hashCode();
 	}
