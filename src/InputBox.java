@@ -12,17 +12,25 @@ public class InputBox extends Box{
         editable = x>=topX && x<=width+topX && y>=topY && y<=topY+height;
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
     }
+    @Override
+    public String showMessage(){
+        return new String(new char[super.showMessage().length()]).replace('\0', '#');
+    }
+    public String showMessageNonCrypted(){
+        return super.showMessage();
+    }
     public Boolean canEdit(){
         return editable;
     }
     public void addChar(char c){
         if (editable){
-            message+=c;
+            editMessage(showMessageNonCrypted()+c);
         }
     }
     public void deleteChar(){
-        if (editable && message.length()>0){
-            message = message.substring(0, message.length() - 1);
+        String tempMessage = showMessageNonCrypted();
+        if (editable && tempMessage.length()>0){
+            editMessage(tempMessage.substring(0, tempMessage.length() - 1));
         }
     }
 }

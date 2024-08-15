@@ -40,7 +40,7 @@ public class MyCanvas extends Canvas {
         }
         shift+=passwordBoxesSpacing+passwordBoxesHeight;
         messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
-        password=inputBox.message;
+        password=inputBox.showMessageNonCrypted();
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
@@ -49,27 +49,27 @@ public class MyCanvas extends Canvas {
                 int y = e.getY();
             	for(PasswordBox passwordBox : passwordBoxes) {
                 	if(passwordBox.isPositionOnTheBox(x,y)) {
-                		passwordBox.message = manager.unveil(password,passwordBox.getWebsite());
-                        messageBox.message = "";
+                		passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
+                        messageBox.editMessage( "");
                         drawBox(getGraphics(), passwordBox);
                         break;
                     }
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
                         copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
                         if(manager.canUnveil(password, passwordBox.getWebsite())){
-                            messageBox.message = "Copied!";
+                            messageBox.editMessage( "Copied!");
                         }
                         else{
-                            messageBox.message = "Invalid action!";
+                            messageBox.editMessage( "Invalid action!");
                         }
                         break;
                     }
                     else if(inputBox.isPositionOnTheBox(x, y)){
-                        messageBox.message = "Write something !";
+                        messageBox.editMessage("Write something !");
                         break;
                     }
                     else{
-                        messageBox.message = "Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")";
+                        messageBox.editMessage("Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")");
                         
                     }
             	}
@@ -79,8 +79,8 @@ public class MyCanvas extends Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
             	for(PasswordBox passwordBox : passwordBoxes) {
-                    if(passwordBox.message!=cryptedMessage){
-                        passwordBox.message=cryptedMessage;
+                    if(passwordBox.showMessage()!=cryptedMessage){
+                        passwordBox.editMessage(cryptedMessage);
                         drawBox(getGraphics(), passwordBox);
                         break;
                     }
@@ -97,7 +97,7 @@ public class MyCanvas extends Canvas {
                 if (Character.isLetterOrDigit(ch) || Character.isSpaceChar(ch) || isPrintableChar(ch)) {
                     // Only append if it's a printable character
                     inputBox.addChar(ch);
-                    password=inputBox.message;
+                    password=inputBox.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
                     drawBox(getGraphics(), inputBox);
                 }
@@ -109,7 +109,7 @@ public class MyCanvas extends Canvas {
                 if (keyCode == KeyEvent.VK_BACK_SPACE) {
                     // Handle backspace to remove the last character
                     inputBox.deleteChar();
-                    password=inputBox.message;
+                    password=inputBox.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
                     drawBox(getGraphics(), inputBox);
                 }
@@ -150,7 +150,7 @@ public class MyCanvas extends Canvas {
         g.fillRect(box.topX, box.topY, box.width, box.height);
         g.setColor(box.textColor);
         int[] center = box.messageCenter();
-        g.drawString(box.message, center[0], center[1]);
+        g.drawString(box.showMessage(), center[0], center[1]);
     }
     public int[] minimumNeededResolution() {
     	int[] out = {messageBox.width+messageBox.topX,messageBox.height+messageBox.topY};

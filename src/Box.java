@@ -6,7 +6,7 @@ public class Box {
     public int height;
     public int topX;
     public int topY;
-    public String message;
+    private String message;
     public Color backgroundColor;
     public Color textColor;
     public Box(String message,int topX,int topY,int width,int height,Color backgroundColor,Color textColor){
@@ -34,6 +34,13 @@ public class Box {
         int centerY= topY+height/2;
         int[] out = {centerX,centerY};
         return out;
+    }
+    public String showMessage(){
+        return message;
+    }
+    public Boolean editMessage(String input){
+        message = input;
+        return true;
     }
     
 }
