@@ -1,11 +1,15 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Stack;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+
+import java.net.URL;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
@@ -31,11 +35,11 @@ public class MyCanvas extends Canvas {
     	passwordBoxes = new PasswordBox[numberOfPasses];
         int shift = inputBoxHeight+passwordBoxesSpacing;
         for(int i =0;i<numberOfPasses;i++) {
-            String websiteEx = "dooglydoo" + String.valueOf(i) + ".com";
+            String appExample = "dooglydoo" + String.valueOf(i);
             String passwordEx = "test " + String.valueOf(i);
             
-        	manager.addLocalPasscode(websiteEx,passwordEx);
-        	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,websiteEx,copyToClipboardWidth);
+        	manager.addLocalPasscode(appExample,passwordEx);
+        	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,appExample,copyToClipboardWidth);
             shift += (passwordBoxesSpacing+passwordBoxesHeight);
         }
         shift+=passwordBoxesSpacing+passwordBoxesHeight;
@@ -127,9 +131,45 @@ public class MyCanvas extends Canvas {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, null);
     }
+    private BufferedImage downloadImageFromTitle(String title) {
+        String imageUrl = generateImageUrl(title);
+        BufferedImage img = null;
+        try {
+            URL url = new URL(imageUrl);
+            img = ImageIO.read(url);  // Downloads and reads the image
+        } catch (IOException e) {
+            System.out.println("Image not found for title: " + title);
+            e.printStackTrace();
+        }
+        return img;
+    }
+    // Generate a URL for the image related to the title
+    private String generateImageUrl(String title) {
+        // Basic URL generation for simplicity; you can replace it with any logic or API call
+        // Example of using a simple search pattern
+        return "https://logo.clearbit.com/" + title.toLowerCase() + ".com";
+    }
+     // Helper method to create a JFrame to render the JPanel
+     public boolean drawImage(Graphics g,String title,int side,int x,int y) {
+        BufferedImage image = downloadImageFromTitle(title);
+        if (image != null) {
+            // Get panel dimensions
+
+            // Resize and draw the image in the square
+            g.drawImage(image, x, y, side, side, this);
+            return true;
+        } else {
+            // Fallback if image was not found
+            //BufferedImage image = new BufferedImage(side, side, y);
+            g.setColor(Color.RED);
+            g.drawString(title, x, y);
+            return false;
+        }
+    }
 
     @Override
     public void paint(Graphics g) {
+        
         drawBox(g, inputBox);
         // Set the color for the drawing
         // Draw thoses rectangles
@@ -144,6 +184,7 @@ public class MyCanvas extends Canvas {
         }
         //Draw message Box:
         drawBox(g, messageBox);
+        drawImage(g,"UBS",60,20,20);
     }
     public void drawBox(Graphics g,Box box) {
         g.setColor(box.backgroundColor);
