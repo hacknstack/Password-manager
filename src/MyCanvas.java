@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class MyCanvas extends Canvas {
     private int passwordBoxesHeight = 50;
     private int copyToClipboardWidth = 40;
 
-    public MyCanvas() {
+    public MyCanvas() throws NoSuchAlgorithmException {
         inputBox = new InputBox(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
@@ -53,18 +54,33 @@ public class MyCanvas extends Canvas {
                 int y = e.getY();
             	for(PasswordBox passwordBox : passwordBoxes) {
                 	if(passwordBox.isPositionOnTheBox(x,y)) {
-                		passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
+                		try {
+                            passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
+                        } catch (NoSuchAlgorithmException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }
                         messageBox.editMessage( "");
                         drawBox(getGraphics(), passwordBox);
                         break;
                     }
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
-                        copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
-                        if(manager.canUnveil(password, passwordBox.getWebsite())){
-                            messageBox.editMessage( "Copied!");
+                        try {
+                            copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
+                        } catch (NoSuchAlgorithmException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
                         }
-                        else{
-                            messageBox.editMessage( "Invalid action!");
+                        try {
+                            if(manager.canUnveil(password, passwordBox.getWebsite())){
+                                messageBox.editMessage( "Copied!");
+                            }
+                            else{
+                                messageBox.editMessage( "Invalid action!");
+                            }
+                        } catch (NoSuchAlgorithmException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
                         }
                         break;
                     }
@@ -161,8 +177,10 @@ public class MyCanvas extends Canvas {
         } else {
             // Fallback if image was not found
             //BufferedImage image = new BufferedImage(side, side, y);
+            g.setColor(Color.WHITE);
+            g.fillRect(x, y, side, side);
             g.setColor(Color.RED);
-            g.drawString(title, x, y);
+            g.drawString(title, x+side/2, y+side/2);
             return false;
         }
     }
@@ -183,8 +201,9 @@ public class MyCanvas extends Canvas {
             drawBox(g, copyBox);
         }
         //Draw message Box:
+        
         drawBox(g, messageBox);
-        drawImage(g,"UBS",60,20,20);
+        drawImage(g,"android",60,20,20);
     }
     public void drawBox(Graphics g,Box box) {
         g.setColor(box.backgroundColor);

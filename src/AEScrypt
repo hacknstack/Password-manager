@@ -4,9 +4,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class AESDecryption {
-    public static String encrypt(String key, String decrypted) throws Exception {
+    public static String encrypt(byte[] keyBytes, String decrypted) throws Exception {
         // AES requires a 128-bit (16-byte) key
-        byte[] keyBytes = key.getBytes("UTF-8");
         
         // Ensure the key is 16 bytes long (AES key size)
         SecretKey secretKey = new SecretKeySpec(keyBytes, 0, 16, "AES");
