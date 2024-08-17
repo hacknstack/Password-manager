@@ -36,10 +36,15 @@ public class MyCanvas extends Canvas {
     	passwordBoxes = new PasswordBox[numberOfPasses];
         int shift = inputBoxHeight+passwordBoxesSpacing;
         for(int i =0;i<numberOfPasses;i++) {
-            String appExample = "dooglydoo" + String.valueOf(i);
+            String appExample = "google"+ String.valueOf(i);
             String passwordEx = "test " + String.valueOf(i);
             
-        	manager.addLocalPasscode(appExample,passwordEx);
+        	try {
+                manager.addLocalPasscode(appExample,passwordEx);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,appExample,copyToClipboardWidth);
             shift += (passwordBoxesSpacing+passwordBoxesHeight);
         }
@@ -166,7 +171,11 @@ public class MyCanvas extends Canvas {
         return "https://logo.clearbit.com/" + title.toLowerCase() + ".com";
     }
      // Helper method to create a JFrame to render the JPanel
-     public boolean drawImage(Graphics g,String title,int side,int x,int y) {
+     public boolean drawImageBox(Graphics g,Box imageBox) {
+        String title = imageBox.showMessage();
+        int x = imageBox.topX;
+        int y = imageBox.topY;
+        int side = imageBox.height;
         BufferedImage image = downloadImageFromTitle(title);
         if (image != null) {
             // Get panel dimensions
@@ -177,10 +186,7 @@ public class MyCanvas extends Canvas {
         } else {
             // Fallback if image was not found
             //BufferedImage image = new BufferedImage(side, side, y);
-            g.setColor(Color.WHITE);
-            g.fillRect(x, y, side, side);
-            g.setColor(Color.RED);
-            g.drawString(title, x+side/2, y+side/2);
+            drawBox(g, imageBox);
             return false;
         }
     }
@@ -199,11 +205,12 @@ public class MyCanvas extends Canvas {
             //Draw copy To clipboard boxes
             Box copyBox = passwordBox.copyToClipboardBox();
             drawBox(g, copyBox);
+            Box imageBox = passwordBox.websiteBox();
+            drawImageBox(g,imageBox);
         }
         //Draw message Box:
         
         drawBox(g, messageBox);
-        drawImage(g,"android",60,20,20);
     }
     public void drawBox(Graphics g,Box box) {
         g.setColor(box.backgroundColor);

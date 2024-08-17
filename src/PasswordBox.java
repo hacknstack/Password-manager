@@ -28,6 +28,9 @@ public class PasswordBox extends Box{
     public Box copyToClipboardBox(){
         return new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
     }
+    public Box websiteBox(){
+        return new Box(website,topX+width,topY,height,height,Color.white,Color.RED);
+    }
     public String getWebsite(){
         return website;
     }

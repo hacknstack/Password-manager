@@ -13,23 +13,20 @@ import java.security.Security;
 
 public class PasswordManager {
 	private byte[] hashcode;
-	private HashMap<String, String> localPasscodes;
+	private HashMap<String, byte[]> localPasscodes;
 	
 	public PasswordManager(String GlobalPasscode) throws NoSuchAlgorithmException {
 		this.localPasscodes = new HashMap<>();
 		this.hashcode = hashFun(GlobalPasscode);
 		
 	}
-	public void addLocalPasscode(String website,String localPasscode) {
-		localPasscodes.put(website,localPasscode);
+	public void addLocalPasscode(String website,String localPasscode) throws Exception {
+		if (localPasscodes.containsKey(website)){
+			throw new Exception("only one website/application per password please");
+		}
+		localPasscodes.put(website,AESDecryption localPasscode.getBytes(StandardCharsets.UTF_8));
 	}
 	public String unveil(String GlobalPasscode,String website) throws NoSuchAlgorithmException {
-		byte[] h = hashFun(GlobalPasscode);
-		for (byte c :h){
-			System.out.print(c + ",");
-		}
-		System.out.println("----------------------");
-		System.out.println(new String(h, StandardCharsets.US_ASCII));
 		if (Equality(hashFun(GlobalPasscode),hashcode)){ 
 			if (localPasscodes.containsKey(website)){
 				return localPasscodes.get(website);
@@ -40,9 +37,7 @@ public class PasswordManager {
 	}
 	public Boolean canUnveil(String GlobalPasscode,String website) throws NoSuchAlgorithmException {
 		if (Equality(hashFun(GlobalPasscode),hashcode)){
-			if (Equality(hashFun(GlobalPasscode),hashcode)){
-				return true;
-			}
+			return true;
 		}
 		return false;
 	}
@@ -61,6 +56,6 @@ public class PasswordManager {
 		}
 			*/
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		return digest.digest(s.getBytes(StandardCharsets.UTF_8));
+		return Arrays.copyOfRange(digest.digest(s.getBytes(StandardCharsets.UTF_8)), 0, 16);
 	}
 }
