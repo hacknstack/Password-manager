@@ -3,40 +3,38 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
-/* 
-import java.util.Iterator;
-import java.util.Set;
-import java.security.Provider;
-import java.security.Provider.Service;
-import java.security.Security;
-*/
-
 public class PasswordManager {
-	private byte[] hashcode;
+	private byte[] hashedGlobalPassword;
 	private HashMap<String, byte[]> localPasscodes;
 	
 	public PasswordManager(String GlobalPasscode) throws NoSuchAlgorithmException {
 		this.localPasscodes = new HashMap<>();
-		this.hashcode = hashFun(GlobalPasscode);
+		this.hashedGlobalPassword = hashFun(GlobalPasscode);
 		
 	}
-	public void addLocalPasscode(String website,String localPasscode) throws Exception {
+	public void addLocalPasscode(String website,String localPasscode,String GlobalPasscode) throws Exception {
 		if (localPasscodes.containsKey(website)){
 			throw new Exception("only one website/application per password please");
 		}
-		localPasscodes.put(website,AESDecryption localPasscode.getBytes(StandardCharsets.UTF_8));
+		else if(!Equality(hashFun(GlobalPasscode),hashedGlobalPassword)){
+			throw new Exception("wrong global password !");
+		}
+		else{
+			localPasscodes.put(website, AESDecryption.encryptByte( getSymetricKey(GlobalPasscode),localPasscode.getBytes(StandardCharsets.UTF_8)));
+		}
+		
 	}
-	public String unveil(String GlobalPasscode,String website) throws NoSuchAlgorithmException {
-		if (Equality(hashFun(GlobalPasscode),hashcode)){ 
+	public String unveil(String GlobalPasscode,String website) throws Exception {
+		if (Equality(hashFun(GlobalPasscode),hashedGlobalPassword)){ 
 			if (localPasscodes.containsKey(website)){
-				return localPasscodes.get(website);
+				return new String(AESDecryption.decryptByte(getSymetricKey(GlobalPasscode),localPasscodes.get(website)),StandardCharsets.UTF_8);
 			}
 			return "website not found";
 		}
 		return "wrong password";
 	}
 	public Boolean canUnveil(String GlobalPasscode,String website) throws NoSuchAlgorithmException {
-		if (Equality(hashFun(GlobalPasscode),hashcode)){
+		if (Equality(hashFun(GlobalPasscode),hashedGlobalPassword)){
 			return true;
 		}
 		return false;
@@ -45,17 +43,11 @@ public class PasswordManager {
 		return Arrays.equals(array1, array2);
 	}
 	private static byte[] hashFun(String s) throws NoSuchAlgorithmException {
-		/* 
-		Provider[] array = Security.getProviders();
-		for (Provider p : array){
-			System.out.println(p.getName()+ " //"+ p.getInfo()+ "&&& ");
-			Iterator<Service> se = p.getServices().iterator();
-			while(se.hasNext()){
-				System.out.println("            "+se.next().getAlgorithm());
-			}
-		}
-			*/
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
-		return Arrays.copyOfRange(digest.digest(s.getBytes(StandardCharsets.UTF_8)), 0, 16);
+		return digest.digest(s.getBytes(StandardCharsets.UTF_8));
+	}
+	private static byte[] getSymetricKey(String s) throws NoSuchAlgorithmException{
+		MessageDigest digest = MessageDigest.getInstance("MD5");
+		return digest.digest(s.getBytes(StandardCharsets.UTF_8));
 	}
 }

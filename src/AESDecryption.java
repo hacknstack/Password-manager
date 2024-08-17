@@ -1,10 +1,9 @@
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
 
 public class AESDecryption {
-    public static String encrypt(byte[] keyBytes, String decrypted) throws Exception {
+    public static byte[] encryptByte(byte[] keyBytes, byte[] decryptedBytes) throws Exception {
         // AES requires a 128-bit (16-byte) key
         
         // Ensure the key is 16 bytes long (AES key size)
@@ -15,15 +14,14 @@ public class AESDecryption {
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
         // Encrypt the input string
-        byte[] encryptedBytes = cipher.doFinal(decrypted.getBytes("UTF-8"));
+        byte[] encryptedBytes = cipher.doFinal(decryptedBytes);
 
         // Encode the encrypted bytes to Base64 to get a readable string
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        return encryptedBytes;
     }
 
-    public static String decrypt(String key, String encrypted) throws Exception {
-        // AES requires a 128-bit (16-byte) key
-        byte[] keyBytes = key.getBytes("UTF-8");
+    public static byte[] decryptByte(byte[] keyBytes, byte[] encryptedBytes) throws Exception {
+
 
         // Ensure the key is 16 bytes long (AES key size)
         SecretKey secretKey = new SecretKeySpec(keyBytes, 0, 16, "AES");
@@ -32,13 +30,10 @@ public class AESDecryption {
         Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
 
-        // Decode the Base64 encoded string to get the encrypted bytes
-        byte[] encryptedBytes = Base64.getDecoder().decode(encrypted);
-
         // Decrypt the bytes
         byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
 
         // Convert decrypted bytes back to a string
-        return new String(decryptedBytes, "UTF-8");
+        return decryptedBytes;
     }
 }

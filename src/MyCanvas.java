@@ -40,7 +40,7 @@ public class MyCanvas extends Canvas {
             String passwordEx = "test " + String.valueOf(i);
             
         	try {
-                manager.addLocalPasscode(appExample,passwordEx);
+                manager.addLocalPasscode(appExample,passwordEx,password);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -61,7 +61,7 @@ public class MyCanvas extends Canvas {
                 	if(passwordBox.isPositionOnTheBox(x,y)) {
                 		try {
                             passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
-                        } catch (NoSuchAlgorithmException e1) {
+                        } catch (Exception e1) {
                             // TODO Auto-generated catch block
                             e1.printStackTrace();
                         }
@@ -72,7 +72,7 @@ public class MyCanvas extends Canvas {
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
                         try {
                             copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
-                        } catch (NoSuchAlgorithmException e1) {
+                        } catch (Exception e1) {
                             // TODO Auto-generated catch block
                             e1.printStackTrace();
                         }
