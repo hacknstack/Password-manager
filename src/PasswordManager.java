@@ -25,7 +25,7 @@ public class PasswordManager {
 		
 	}
 	public String unveil(String GlobalPasscode,String website) throws Exception {
-		if (Equality(hashFun(GlobalPasscode),hashedGlobalPassword)){ 
+		if (canUnveil(GlobalPasscode, website)){ 
 			if (localPasscodes.containsKey(website)){
 				return new String(AESDecryption.decryptByte(getSymetricKey(GlobalPasscode),localPasscodes.get(website)),StandardCharsets.UTF_8);
 			}

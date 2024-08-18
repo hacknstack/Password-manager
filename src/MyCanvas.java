@@ -1,6 +1,7 @@
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Arrays;
 import java.util.Stack;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -20,7 +21,7 @@ public class MyCanvas extends Canvas {
     private String password="babe10ued";
     private String cryptedMessage = "###########";
     private PasswordManager manager; 
-    private Box messageBox;
+    private ButtonPasswordBox messageBox;
     private int inputBoxHeight = 35;
     private int numberOfPasses = 7;
     private int passwordBoxesSpacing = 25;
@@ -29,12 +30,13 @@ public class MyCanvas extends Canvas {
     private int passwordBoxesWidth = 250;
     private int passwordBoxesHeight = 50;
     private int copyToClipboardWidth = 40;
+    private int shift = inputBoxHeight+passwordBoxesSpacing;
 
     public MyCanvas() throws NoSuchAlgorithmException {
         inputBox = new InputBox(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
-        int shift = inputBoxHeight+passwordBoxesSpacing;
+        
         for(int i =0;i<numberOfPasses;i++) {
             String appExample = "google"+ String.valueOf(i);
             String passwordEx = "test " + String.valueOf(i);
@@ -49,7 +51,7 @@ public class MyCanvas extends Canvas {
             shift += (passwordBoxesSpacing+passwordBoxesHeight);
         }
         shift+=passwordBoxesSpacing+passwordBoxesHeight;
-        messageBox = new Box("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
+        messageBox = new ButtonPasswordBox("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
         password=inputBox.showMessageNonCrypted();
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
@@ -66,7 +68,7 @@ public class MyCanvas extends Canvas {
                             e1.printStackTrace();
                         }
                         messageBox.editMessage( "");
-                        drawBox(getGraphics(), passwordBox);
+                        passwordBox.drawBox(getGraphics());
                         break;
                     }
                     else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
@@ -98,7 +100,14 @@ public class MyCanvas extends Canvas {
                         
                     }
             	}
-                drawBox(getGraphics(), messageBox);
+                if (messageBox.isPositionOnTheBox(x, y)){
+                    numberOfPasses+=1;
+                    passwordBoxes=Arrays.copyOf(passwordBoxes, numberOfPasses);
+                    
+                    passwordBoxes[numberOfPasses-1]= messageBox.newPasswordBox(cryptedMessage, "google", shift, copyToClipboardWidth);
+                    passwordBoxes[numberOfPasses-1].drawBox(getGraphics());
+                }
+                messageBox.drawBox(getGraphics());
             	// Repaint the canvas to reflect the change
             }
             @Override
@@ -106,7 +115,7 @@ public class MyCanvas extends Canvas {
             	for(PasswordBox passwordBox : passwordBoxes) {
                     if(passwordBox.showMessage()!=cryptedMessage){
                         passwordBox.editMessage(cryptedMessage);
-                        drawBox(getGraphics(), passwordBox);
+                        passwordBox.drawBox(getGraphics());
                         break;
                     }
                 	
@@ -124,7 +133,7 @@ public class MyCanvas extends Canvas {
                     inputBox.addChar(ch);
                     password=inputBox.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
-                    drawBox(getGraphics(), inputBox);
+                    inputBox.drawBox(getGraphics());
                 }
             }
 
@@ -136,7 +145,7 @@ public class MyCanvas extends Canvas {
                     inputBox.deleteChar();
                     password=inputBox.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
-                    drawBox(getGraphics(), inputBox);
+                    inputBox.drawBox(getGraphics());
                 }
             }
         });
@@ -152,72 +161,23 @@ public class MyCanvas extends Canvas {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, null);
     }
-    private BufferedImage downloadImageFromTitle(String title) {
-        String imageUrl = generateImageUrl(title);
-        BufferedImage img = null;
-        try {
-            URL url = new URL(imageUrl);
-            img = ImageIO.read(url);  // Downloads and reads the image
-        } catch (IOException e) {
-            System.out.println("Image not found for title: " + title);
-            e.printStackTrace();
-        }
-        return img;
-    }
-    // Generate a URL for the image related to the title
-    private String generateImageUrl(String title) {
-        // Basic URL generation for simplicity; you can replace it with any logic or API call
-        // Example of using a simple search pattern
-        return "https://logo.clearbit.com/" + title.toLowerCase() + ".com";
-    }
-     // Helper method to create a JFrame to render the JPanel
-     public boolean drawImageBox(Graphics g,Box imageBox) {
-        String title = imageBox.showMessage();
-        int x = imageBox.topX;
-        int y = imageBox.topY;
-        int side = imageBox.height;
-        BufferedImage image = downloadImageFromTitle(title);
-        if (image != null) {
-            // Get panel dimensions
-
-            // Resize and draw the image in the square
-            g.drawImage(image, x, y, side, side, this);
-            return true;
-        } else {
-            // Fallback if image was not found
-            //BufferedImage image = new BufferedImage(side, side, y);
-            drawBox(g, imageBox);
-            return false;
-        }
-    }
+    
+     
 
     @Override
     public void paint(Graphics g) {
-        
-        drawBox(g, inputBox);
+
+        inputBox.drawBox(g);
         // Set the color for the drawing
         // Draw thoses rectangles
         for(PasswordBox passwordBox : passwordBoxes) {
 
             //draw password boxes
-        	drawBox(g, passwordBox);
-
-            //Draw copy To clipboard boxes
-            Box copyBox = passwordBox.copyToClipboardBox();
-            drawBox(g, copyBox);
-            Box imageBox = passwordBox.websiteBox();
-            drawImageBox(g,imageBox);
+        	passwordBox.drawBox(g);
+            //Draw message Box:
         }
-        //Draw message Box:
         
-        drawBox(g, messageBox);
-    }
-    public void drawBox(Graphics g,Box box) {
-        g.setColor(box.backgroundColor);
-        g.fillRect(box.topX, box.topY, box.width, box.height);
-        g.setColor(box.textColor);
-        int[] center = box.messageCenter();
-        g.drawString(box.showMessage(), center[0], center[1]);
+        messageBox.drawBox(g);
     }
     public int[] minimumNeededResolution() {
     	int[] out = {messageBox.width+messageBox.topX,messageBox.height+messageBox.topY};

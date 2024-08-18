@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Graphics;
 public class Box {
     private float charSize = 78.0f/11.0f;
 
@@ -29,7 +30,7 @@ public class Box {
     public boolean isPositionOnTheBox(int x,int y){
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
     }
-    public int[] messageCenter(){
+    protected int[] messageCenter(){
         int centerX= Math.round(topX+width/2 - message.length()*charSize/2);
         int centerY= topY+height/2;
         int[] out = {centerX,centerY};
@@ -41,6 +42,13 @@ public class Box {
     public Boolean editMessage(String input){
         message = input;
         return true;
+    }
+    public void drawBox(Graphics g) {
+        g.setColor(backgroundColor);
+        g.fillRect(topX, topY, width, height);
+        g.setColor(textColor);
+        int[] center = messageCenter();
+        g.drawString(showMessage(), center[0], center[1]);
     }
     
 }

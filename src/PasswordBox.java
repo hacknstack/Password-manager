@@ -1,6 +1,7 @@
 import java.awt.Color;
+import java.awt.Graphics;
 public class PasswordBox extends Box{
-    private int copyToClipboardWidth;
+    protected int copyToClipboardWidth;
     private String website;
     public PasswordBox(String message, int topX, int topY, int width, int height,Color backgroundColor,Color textColor,String website, int copyToClipboardWidth) {
         super(message, topX, topY, width, height,backgroundColor,textColor);
@@ -29,10 +30,20 @@ public class PasswordBox extends Box{
         return new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
     }
     public Box websiteBox(){
-        return new Box(website,topX+width,topY,height,height,Color.white,Color.RED);
+        return new WebsiteBox(website,topX+width,topY,height,height,Color.white,Color.RED);
     }
     public String getWebsite(){
         return website;
+    }
+    @Override
+    public void drawBox(Graphics g) {
+        g.setColor(backgroundColor);
+        g.fillRect(topX, topY, width, height);
+        g.setColor(textColor);
+        int[] center = messageCenter();
+        g.drawString(showMessage(), center[0], center[1]);
+        copyToClipboardBox().drawBox(g);
+        websiteBox().drawBox(g);
     }
 
 }
