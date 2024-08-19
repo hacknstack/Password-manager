@@ -44,14 +44,12 @@ public class MyCanvas extends Canvas {
         	try {
                 manager.addLocalPasscode(appExample,passwordEx,password);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                exceptionHandler(e);
             }
         	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,appExample,copyToClipboardWidth);
             shift += (passwordBoxesSpacing+passwordBoxesHeight);
         }
-        shift+=passwordBoxesSpacing+passwordBoxesHeight;
-        messageBox = new ButtonPasswordBox("",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
+        messageBox = new ButtonPasswordBox("Click here to add!",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
         password=inputBox.showMessageNonCrypted();
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
@@ -64,8 +62,7 @@ public class MyCanvas extends Canvas {
                 		try {
                             passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
                         } catch (Exception e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            exceptionHandler(e1);
                         }
                         messageBox.editMessage( "");
                         passwordBox.drawBox(getGraphics());
@@ -75,8 +72,7 @@ public class MyCanvas extends Canvas {
                         try {
                             copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
                         } catch (Exception e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            exceptionHandler(e1);
                         }
                         try {
                             if(manager.canUnveil(password, passwordBox.getWebsite())){
@@ -86,8 +82,7 @@ public class MyCanvas extends Canvas {
                                 messageBox.editMessage( "Invalid action!");
                             }
                         } catch (NoSuchAlgorithmException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
+                            exceptionHandler(e1);
                         }
                         break;
                     }
@@ -96,7 +91,7 @@ public class MyCanvas extends Canvas {
                         break;
                     }
                     else{
-                        messageBox.editMessage("Mouse position : ("+String.valueOf(x)+","+String.valueOf(y) + ")");
+                        messageBox.editMessage("Click here to add!");
                         
                     }
             	}
@@ -104,7 +99,13 @@ public class MyCanvas extends Canvas {
                     numberOfPasses+=1;
                     passwordBoxes=Arrays.copyOf(passwordBoxes, numberOfPasses);
                     
-                    passwordBoxes[numberOfPasses-1]= messageBox.newPasswordBox(cryptedMessage, "google", shift, copyToClipboardWidth);
+                    passwordBoxes[numberOfPasses-1]= messageBox.newPasswordBox(cryptedMessage, "google", passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth);
+                    try {
+                        manager.addLocalPasscode("google","added recently",password);
+                    } catch (Exception e1) {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                     passwordBoxes[numberOfPasses-1].drawBox(getGraphics());
                 }
                 messageBox.drawBox(getGraphics());
@@ -156,10 +157,15 @@ public class MyCanvas extends Canvas {
         Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
         return !Character.isISOControl(c) && block != null && block != Character.UnicodeBlock.SPECIALS;
     }
+    //helper method to copy any string to the user clipboard
     public static void copyToClipboard(String input) {
         StringSelection stringSelection = new StringSelection(input);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, null);
+    }
+    //helper method to print exceptions in the messagebox
+    public void exceptionHandler(Exception e){
+        messageBox.editMessage(e.getMessage());
     }
     
      

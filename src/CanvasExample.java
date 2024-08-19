@@ -15,11 +15,10 @@ public class CanvasExample {
         frame.add(canvas);
 
         // Set the size of the frame
-        frame.setSize(minRes[0]+100, minRes[1]+100);
+        frame.setSize(minRes[0]+100, minRes[1]+300);
 
         // Make the frame visible
         frame.setVisible(true);
-
         // Add a window listener to close the window when the close button is clicked
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {

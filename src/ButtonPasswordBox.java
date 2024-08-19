@@ -12,7 +12,8 @@ public class ButtonPasswordBox extends Box{
     }
 
     public PasswordBox newPasswordBox(String message,String website,int spacing,int copyToClipboardWidth){
-        topY += spacing+height;
-        return new PasswordBox(message,topX,topY,width,height,backgroundColor,textColor,website,copyToClipboardWidth);
+        PasswordBox out = new PasswordBox(message,topX,topY,width,height,website,copyToClipboardWidth);
+        this.topY += spacing;
+        return out;
     }
 }
