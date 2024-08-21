@@ -2,6 +2,7 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Stack;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -16,12 +17,16 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 public class MyCanvas extends Canvas {
+    private PasswordManager manager; 
+
 	private InputBox inputBox;
     private PasswordBox[] passwordBoxes;
+    private ButtonPasswordBox messageBox;
+    private Optional<PasswordBoxDraft> temp = Optional.empty();
     private String password="babe10ued";
     private String cryptedMessage = "###########";
-    private PasswordManager manager; 
-    private ButtonPasswordBox messageBox;
+    
+    
     private int inputBoxHeight = 35;
     private int numberOfPasses = 7;
     private int passwordBoxesSpacing = 25;
@@ -64,7 +69,7 @@ public class MyCanvas extends Canvas {
                         } catch (Exception e1) {
                             exceptionHandler(e1);
                         }
-                        messageBox.editMessage( "");
+                        messageBox.editMessage( "Click here to add!");
                         passwordBox.drawBox(getGraphics());
                         break;
                     }
@@ -96,17 +101,13 @@ public class MyCanvas extends Canvas {
                     }
             	}
                 if (messageBox.isPositionOnTheBox(x, y)){
-                    numberOfPasses+=1;
-                    passwordBoxes=Arrays.copyOf(passwordBoxes, numberOfPasses);
-                    
-                    passwordBoxes[numberOfPasses-1]= messageBox.newPasswordBox(cryptedMessage, "google", passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth);
-                    try {
-                        manager.addLocalPasscode("google","added recently",password);
-                    } catch (Exception e1) {
-                        // TODO Auto-generated catch block
-                        e1.printStackTrace();
+                    if(!temp.isPresent()){
+                        prt("I'm not present");
                     }
-                    passwordBoxes[numberOfPasses-1].drawBox(getGraphics());
+                    if(!temp.isPresent()){
+                        temp = Optional.of(messageBox.newPasswordBoxDraft( passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth));
+                        temp.get().drawBox(getGraphics());
+                    }
                 }
                 messageBox.drawBox(getGraphics());
             	// Repaint the canvas to reflect the change
@@ -165,7 +166,8 @@ public class MyCanvas extends Canvas {
     }
     //helper method to print exceptions in the messagebox
     public void exceptionHandler(Exception e){
-        messageBox.editMessage(e.getMessage());
+        System.out.printf("here's an error you might want to get an eye to :"+ " " + e.getMessage());
+        messageBox.editMessage("Error : "+e.getMessage());
     }
     
      
@@ -178,15 +180,19 @@ public class MyCanvas extends Canvas {
         // Draw thoses rectangles
         for(PasswordBox passwordBox : passwordBoxes) {
 
-            //draw password boxes
+            //draw password box
         	passwordBox.drawBox(g);
-            //Draw message Box:
         }
-        
+        if(temp.isPresent()){
+            temp.get().drawBox(g);
+        }
         messageBox.drawBox(g);
     }
     public int[] minimumNeededResolution() {
     	int[] out = {messageBox.width+messageBox.topX,messageBox.height+messageBox.topY};
     	return out;
+    }
+    public static void prt(String message){
+        System.out.printf(message);
     }
 }

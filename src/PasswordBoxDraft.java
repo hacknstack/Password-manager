@@ -11,6 +11,15 @@ public class PasswordBoxDraft extends InputBox{
             throw new IllegalArgumentException("copy to clipboard button must still entirely be visible (take into account extra space for the width because topX is for the normal button)");
         }
     }
+    public PasswordBoxDraft(String message,int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
+        super(message,topX,topY,width,height,backgroundColor,textColor);
+        if(topX-copyToClipboardWidth>0){
+            this.copyToClipboardWidth = copyToClipboardWidth;
+        }
+        else{
+            throw new IllegalArgumentException("copy to clipboard button must still entirely be visible (take into account extra space for the width because topX is for the normal button)");
+        }
+    }
     public PasswordBoxDraft(int topX, int topY, int width, int height,int copyToClipboardWidth){
         super("",topX,topY,width,height);
         if(topX-copyToClipboardWidth>0){

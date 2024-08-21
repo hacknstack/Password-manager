@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class ButtonPasswordBox extends Box{
+public class ButtonPasswordBox extends InputBox{
 
 
     public ButtonPasswordBox(String message,int topX,int topY,int width,int height){
@@ -11,9 +11,13 @@ public class ButtonPasswordBox extends Box{
         super(message, topX, topY, width, height, backgroundColor, textColor);
     }
 
-    public PasswordBox newPasswordBox(String message,String website,int spacing,int copyToClipboardWidth){
-        PasswordBox out = new PasswordBox(message,topX,topY,width,height,website,copyToClipboardWidth);
+    public PasswordBoxDraft newPasswordBoxDraft(int spacing,int copyToClipboardWidth){
+        PasswordBoxDraft out = new PasswordBoxDraft(topX,topY,width,height,copyToClipboardWidth);
         this.topY += spacing;
         return out;
+    }
+    @Override
+    public String showMessage(){
+        return showMessageNonCrypted();
     }
 }
