@@ -110,7 +110,7 @@ public class MyCanvas extends Canvas {
                     }
                 }
                 temp.ifPresent(
-                    draft ->{ if(draft.isPositionOnTheBox(x, y)){messageBox.editMessage("Write new password and website, click checkmark on the left to confirm");}});
+                    draft ->{ if(draft.isPositionOnTheBox(x, y)){messageBox.editMessage("click checkmark on the left to confirm");}});
                 messageBox.drawBox(getGraphics());
             	// Repaint the canvas to reflect the change
             }
@@ -149,9 +149,11 @@ public class MyCanvas extends Canvas {
                 if (keyCode == KeyEvent.VK_BACK_SPACE) {
                     // Handle backspace to remove the last character
                     inputBox.deleteChar();
+                    temp.ifPresent(draft -> draft.deleteChar());
                     password=inputBox.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
                     inputBox.drawBox(getGraphics());
+                    temp.ifPresent(draft -> draft.drawBox(getGraphics()));
                 }
             }
         });
