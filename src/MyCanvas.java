@@ -30,11 +30,11 @@ public class MyCanvas extends Canvas {
     private int inputBoxHeight = 35;
     private int numberOfPasses = 7;
     private int passwordBoxesSpacing = 25;
-    private int firstpasswordBoxTopX = 50;
+    private int firstpasswordBoxTopX = 55;
     private int firstpasswordBoxTopY = 50;
     private int passwordBoxesWidth = 250;
     private int passwordBoxesHeight = 50;
-    private int copyToClipboardWidth = 40;
+    private int copyToClipboardWidth = passwordBoxesHeight;
     private int shift = inputBoxHeight+passwordBoxesSpacing;
 
     public MyCanvas() throws NoSuchAlgorithmException {
@@ -109,6 +109,8 @@ public class MyCanvas extends Canvas {
                         temp.get().drawBox(getGraphics());
                     }
                 }
+                temp.ifPresent(
+                    draft ->{ if(draft.isPositionOnTheBox(x, y)){messageBox.editMessage("Write new password and website, click checkmark on the left to confirm");}});
                 messageBox.drawBox(getGraphics());
             	// Repaint the canvas to reflect the change
             }
@@ -133,9 +135,11 @@ public class MyCanvas extends Canvas {
                 if (Character.isLetterOrDigit(ch) || Character.isSpaceChar(ch) || isPrintableChar(ch)) {
                     // Only append if it's a printable character
                     inputBox.addChar(ch);
+                    temp.ifPresent(draft -> draft.addChar(ch));
                     password=inputBox.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
                     inputBox.drawBox(getGraphics());
+                    temp.ifPresent(draft -> draft.drawBox(getGraphics()));
                 }
             }
 

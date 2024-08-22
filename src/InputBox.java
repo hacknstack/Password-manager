@@ -1,6 +1,6 @@
 import java.awt.Color;
 public class InputBox extends Box{
-    private Boolean editable = false;
+    protected Boolean editable = false;
     public InputBox(String message,int topX,int topY,int width,int height,Color backgroundColor,Color textColor){
         super(message, topX, topY, width, height,backgroundColor,textColor);
     }
