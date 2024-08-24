@@ -10,7 +10,8 @@ public class PasswordBox extends Box{
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
         else{
-            throw new IllegalArgumentException("copy to clipboard button must still entirely be visible (take into account extra space for the width because topX is for the normal button)");
+            throw new IllegalArgumentException("copy to clipboard button must still entirely be visible "
+            +"(take into account extra space for the width because topX is for the normal button)");
         }
     }
     public PasswordBox(String message, int topX, int topY, int width, int height,String website, int copyToClipboardWidth) {
@@ -20,7 +21,8 @@ public class PasswordBox extends Box{
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
         else{
-            throw new IllegalArgumentException("copy to clipboard button must still entirely be visible (take into account extra space for the width because topX is for the normal button)");
+            throw new IllegalArgumentException("copy to clipboard button must still entirely be visible " 
+            +"(take into account extra space for the width because topX is for the normal button)");
         }
     }
     public Box copyToClipboardBox(String message,Color backgroundColor,Color textColor){

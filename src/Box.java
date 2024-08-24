@@ -31,20 +31,20 @@ public class Box {
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
     }
     protected int[] stringCenters(String s){
-        int centerX= Math.round(topX+width/2 - s.length()*charSize/2);
+        int centerX= Math.round(topX+width/2 - Math.min(s.length(),maxCharPerLine())*charSize/2);
         int lines = stringLines(s);
-        int[] out = new int[lines*2];
+        int[] out = new int[lines+1];
+        out[0]=centerX;
         for(int i=1;i<=lines;i++){
             int centerY = topY+i*height/(lines+1);
-            out[2*i-2]=centerX;
-            out[2*i-1]=centerY;
+            out[i]=centerY;
         }
         return out;
     }
     private int maxCharPerLine(){
         return Math.round(width/charSize);
     }
-    private int stringLines(String s){
+    private int stringLines(String s){ // maybe not needed for drawing after (only use maxcharperline maybe)
         int lines = 1;
         while(s.length()>maxCharPerLine()*lines){
             lines++;
@@ -60,15 +60,17 @@ public class Box {
     }
     protected void drawText(String s,Graphics g){
         int[] centers = stringCenters(s);
-        for(int k=0;2*k<centers.length;k++){
+        int x = centers[0];
+        for(int k=1;k<centers.length;k++){
             g.setColor(textColor);
-            g.drawString(s, centers[2*k], centers[2*k+1]);
+            int y = centers[k];
+            g.drawString(s.substring((k-1)*maxCharPerLine(),+Math.min(s.length(),k*maxCharPerLine())), x ,y);
         }
     }
     public void drawBox(Graphics g) {
         g.setColor(backgroundColor);
         g.fillRect(topX, topY, width, height);
-        drawText(message, g);
+        drawText(showMessage(), g);
         
     }
     
