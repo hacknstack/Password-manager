@@ -46,10 +46,6 @@ public class PasswordBoxDraft extends InputBox{
         return super.isPositionOnTheBox(x, y)||websiteBoxDraft.isPositionOnTheBox(x, y)||copyToClipboardBox().isPositionOnTheBox(x, y);
     }
     @Override
-    public String showMessage(){
-        return showMessageNonCrypted();
-    }
-    @Override
     public void addChar(char c){
         super.addChar(c);
         websiteBoxDraft.addChar(c);

@@ -16,8 +16,4 @@ public class ButtonPasswordBox extends InputBox{
         this.topY += spacing;
         return out;
     }
-    @Override
-    public String showMessage(){
-        return showMessageNonCrypted();
-    }
 }

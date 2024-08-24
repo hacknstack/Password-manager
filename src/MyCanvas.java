@@ -19,7 +19,7 @@ import java.awt.datatransfer.StringSelection;
 public class MyCanvas extends Canvas {
     private PasswordManager manager; 
 
-	private InputBox inputBox;
+	private InputBoxCrypted inputBoxCrypted;
     private PasswordBox[] passwordBoxes;
     private ButtonPasswordBox messageBox;
     private Optional<PasswordBoxDraft> temp = Optional.empty();
@@ -38,7 +38,7 @@ public class MyCanvas extends Canvas {
     private int shift = inputBoxHeight+passwordBoxesSpacing;
 
     public MyCanvas() throws NoSuchAlgorithmException {
-        inputBox = new InputBox(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
+        inputBoxCrypted = new InputBoxCrypted(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
         
@@ -55,7 +55,7 @@ public class MyCanvas extends Canvas {
             shift += (passwordBoxesSpacing+passwordBoxesHeight);
         }
         messageBox = new ButtonPasswordBox("Click here to add!",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
-        password=inputBox.showMessageNonCrypted();
+        password=inputBoxCrypted.showMessageNonCrypted();
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
@@ -91,7 +91,7 @@ public class MyCanvas extends Canvas {
                         }
                         break;
                     }
-                    else if(inputBox.isPositionOnTheBox(x, y)){
+                    else if(inputBoxCrypted.isPositionOnTheBox(x, y)){
                         messageBox.editMessage("Write something !");
                         break;
                     }
@@ -134,11 +134,11 @@ public class MyCanvas extends Canvas {
                 char ch = e.getKeyChar();
                 if (Character.isLetterOrDigit(ch) || Character.isSpaceChar(ch) || isPrintableChar(ch)) {
                     // Only append if it's a printable character
-                    inputBox.addChar(ch);
+                    inputBoxCrypted.addChar(ch);
                     temp.ifPresent(draft -> draft.addChar(ch));
-                    password=inputBox.showMessageNonCrypted();
+                    password=inputBoxCrypted.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
-                    inputBox.drawBox(getGraphics());
+                    inputBoxCrypted.drawBox(getGraphics());
                     temp.ifPresent(draft -> draft.drawBox(getGraphics()));
                 }
             }
@@ -148,11 +148,11 @@ public class MyCanvas extends Canvas {
                 int keyCode = e.getKeyCode();
                 if (keyCode == KeyEvent.VK_BACK_SPACE) {
                     // Handle backspace to remove the last character
-                    inputBox.deleteChar();
+                    inputBoxCrypted.deleteChar();
                     temp.ifPresent(draft -> draft.deleteChar());
-                    password=inputBox.showMessageNonCrypted();
+                    password=inputBoxCrypted.showMessageNonCrypted();
                     // Repaint the canvas to reflect the change
-                    inputBox.drawBox(getGraphics());
+                    inputBoxCrypted.drawBox(getGraphics());
                     temp.ifPresent(draft -> draft.drawBox(getGraphics()));
                 }
             }
@@ -181,7 +181,7 @@ public class MyCanvas extends Canvas {
     @Override
     public void paint(Graphics g) {
 
-        inputBox.drawBox(g);
+        inputBoxCrypted.drawBox(g);
         // Set the color for the drawing
         // Draw thoses rectangles
         for(PasswordBox passwordBox : passwordBoxes) {

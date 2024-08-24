@@ -37,11 +37,7 @@ public class PasswordBox extends Box{
     }
     @Override
     public void drawBox(Graphics g) {
-        g.setColor(backgroundColor);
-        g.fillRect(topX, topY, width, height);
-        g.setColor(textColor);
-        int[] center = messageCenter();
-        g.drawString(showMessage(), center[0], center[1]);
+        super.drawBox(g);
         copyToClipboardBox().drawBox(g);
         websiteBox().drawBox(g);
     }
