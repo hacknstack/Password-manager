@@ -4,4 +4,6 @@
 An application that simplifies and securize the management of multiple passwords
 
 ### To fix:
-    - add a real cryptographic security for stored passwords
+    -   center a bit more precicely text
+    -   UX password adding (principal and app specific)
+    -   

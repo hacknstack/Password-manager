@@ -43,7 +43,10 @@ public class PasswordBoxDraft extends InputBox{
     /* */
     @Override
     public boolean isPositionOnTheBox(int x,int y){
-        return super.isPositionOnTheBox(x, y)||websiteBoxDraft.isPositionOnTheBox(x, y)||copyToClipboardBox().isPositionOnTheBox(x, y);
+        boolean boxClicked = super.isPositionOnTheBox(x, y);
+        boolean websiteBoxClicked = websiteBoxDraft.isPositionOnTheBox(x, y);
+        boolean copyToClipboardBoxClicked = copyToClipboardBox().isPositionOnTheBox(x, y);
+        return boxClicked||websiteBoxClicked||copyToClipboardBoxClicked;
     }
     @Override
     public void addChar(char c){

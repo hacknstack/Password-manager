@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Stack;
 public class Box {
-    private float charSize = 78.0f/11.0f;
     private String message;
 
     public int width;
@@ -30,26 +30,8 @@ public class Box {
     public boolean isPositionOnTheBox(int x,int y){
         return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
     }
-    protected int[] stringCenters(String s){
-        int centerX= Math.round(topX+width/2 - Math.min(s.length(),maxCharPerLine())*charSize/2);
-        int lines = stringLines(s);
-        int[] out = new int[lines+1];
-        out[0]=centerX;
-        for(int i=1;i<=lines;i++){
-            int centerY = topY+i*height/(lines+1);
-            out[i]=centerY;
-        }
-        return out;
-    }
-    private int maxCharPerLine(){
-        return Math.round(width/charSize);
-    }
-    private int stringLines(String s){ // maybe not needed for drawing after (only use maxcharperline maybe)
-        int lines = 1;
-        while(s.length()>maxCharPerLine()*lines){
-            lines++;
-        }
-        return lines;
+    private int stringSize(String s,Graphics g){
+        return g.getFontMetrics().stringWidth(s);
     }
     public String showMessage(){
         return message;
@@ -59,13 +41,37 @@ public class Box {
         return true;
     }
     protected void drawText(String s,Graphics g){
-        int[] centers = stringCenters(s);
-        int x = centers[0];
-        for(int k=1;k<centers.length;k++){
-            g.setColor(textColor);
-            int y = centers[k];
-            g.drawString(s.substring((k-1)*maxCharPerLine(),+Math.min(s.length(),k*maxCharPerLine())), x ,y);
+        int start =0;
+        int end = 1;
+        Stack<String> toDraw = new Stack<String>();
+        Stack<Integer> xPos = new Stack<Integer>();
+        while(end<=s.length()){
+            while( end+1<=s.length()){
+                if(stringSize(s.substring(start,end+1),g)<width){
+                    end+=1;
+                }
+                else{
+                    break;
+                }
+                
+            }
+            toDraw.push(s.substring(start,end));
+            System.out.printf(s.substring(start,end)+" to be drawn \n");
+            xPos.push(topX+width/2-stringSize(s.substring(start,end),g)/2);
+            start=end;
+            end+=1;
         }
+        int lines = toDraw.size();
+        int linePrinted = 1;
+        while(!toDraw.isEmpty()){
+            int x = xPos.pop();
+            int y = Math.round(topY+height*(lines-linePrinted+1)/(lines+1));
+            System.out.printf("Here are the coordinates ("+String.valueOf(x)+ " ,"+String.valueOf(y)+ ")\n");
+            g.setColor(textColor);
+            g.drawString(toDraw.pop(),x,y);
+            linePrinted+=1;
+        }
+        
     }
     public void drawBox(Graphics g) {
         g.setColor(backgroundColor);
