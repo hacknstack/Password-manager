@@ -1,3 +1,5 @@
+import java.nio.charset.StandardCharsets;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,8 +23,6 @@ public class AESDecryption {
     }
 
     public static byte[] decryptByte(byte[] keyBytes, byte[] encryptedBytes) throws Exception {
-
-
         // Ensure the key is 16 bytes long (AES key size)
         SecretKey secretKey = new SecretKeySpec(keyBytes, 0, 16, "AES");
 

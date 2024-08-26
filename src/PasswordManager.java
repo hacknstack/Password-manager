@@ -1,15 +1,19 @@
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 public class PasswordManager {
 	private byte[] hashedGlobalPassword;
 	private HashMap<String, byte[]> localPasscodes;
+	private String salt;
 	
 	public PasswordManager(String GlobalPasscode) throws NoSuchAlgorithmException {
 		this.localPasscodes = new HashMap<>();
 		this.hashedGlobalPassword = hashFun(GlobalPasscode);
+		this.salt = generateSalt(GlobalPasscode.length());
 		
 	}
 	public void addLocalPasscode(String website,String localPasscode,String GlobalPasscode) throws Exception {
@@ -49,8 +53,18 @@ public class PasswordManager {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		return digest.digest(s.getBytes(StandardCharsets.UTF_8));
 	}
-	private static byte[] getSymetricKey(String s) throws NoSuchAlgorithmException{
+	private byte[] getSymetricKey(String s) throws NoSuchAlgorithmException{
 		MessageDigest digest = MessageDigest.getInstance("MD5");
-		return digest.digest(s.getBytes(StandardCharsets.UTF_8));
+		String saltedPass=saltString(s, salt);
+		return digest.digest(saltedPass.getBytes(StandardCharsets.UTF_8));
 	}
+	private static String saltString(String input, String salt) {
+        return salt + input;
+    }
+	private static String generateSalt(int length) {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[length];
+        random.nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
+    }
 }

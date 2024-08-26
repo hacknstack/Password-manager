@@ -23,7 +23,7 @@ public class MyCanvas extends Canvas {
     private PasswordBox[] passwordBoxes;
     private ButtonPasswordBox messageBox;
     private Optional<PasswordBoxDraft> temp = Optional.empty();
-    private String password="babe10ued";
+    private String password="password";
     private String cryptedMessage = "###########";
     
     
