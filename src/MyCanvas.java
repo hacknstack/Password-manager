@@ -28,7 +28,7 @@ public class MyCanvas extends Canvas {
     
     
     private int inputBoxHeight = 35;
-    private int numberOfPasses = 7;
+    private int numberOfPasses = 0;
     private int passwordBoxesSpacing = 25;
     private int firstpasswordBoxTopX = 55;
     private int firstpasswordBoxTopY = 50;
@@ -41,19 +41,6 @@ public class MyCanvas extends Canvas {
         inputBoxCrypted = new InputBoxCrypted(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
     	passwordBoxes = new PasswordBox[numberOfPasses];
-        
-        for(int i =0;i<numberOfPasses;i++) {
-            String appExample = "google"+ String.valueOf(i);
-            String passwordEx = "test " + String.valueOf(i);
-            
-        	try {
-                manager.addLocalPasscode(appExample,passwordEx,password);
-            } catch (Exception e) {
-                exceptionHandler(e);
-            }
-        	passwordBoxes[i] = new PasswordBox(cryptedMessage,firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,appExample,copyToClipboardWidth);
-            shift += (passwordBoxesSpacing+passwordBoxesHeight);
-        }
         messageBox = new ButtonPasswordBox("Click here to add!",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
         password=inputBoxCrypted.showMessageNonCrypted();
         // Add a mouse listener to handle mouse clicks
@@ -110,7 +97,22 @@ public class MyCanvas extends Canvas {
                     }
                 }
                 temp.ifPresent(
-                    draft ->{ if(draft.isPositionOnTheBox(x, y)){messageBox.editMessage("click checkmark to confirm");}});
+                    draft ->{ if(draft.isPositionOnTheBox(x, y)){
+                        messageBox.editMessage("click checkmark to confirm");
+                        if(draft.validationBox().isPositionOnTheBox(x, y)){
+                            PasswordBox toAdd=  draft.createPasswordBox();
+                            numberOfPasses+=1;
+                            passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
+                            passwordBoxes[numberOfPasses-1]=toAdd;
+                            try {
+                                manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
+                            } catch (Exception e1) {
+                                exceptionHandler(e1);
+                            }
+                            temp = Optional.empty();
+                            repaint();
+                        }
+                }});
                 messageBox.drawBox(getGraphics());
             	// Repaint the canvas to reflect the change
             }

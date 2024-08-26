@@ -34,10 +34,13 @@ public class PasswordManager {
 		return "wrong password";
 	}
 	public Boolean canUnveil(String GlobalPasscode,String website) throws NoSuchAlgorithmException {
-		if (Equality(hashFun(GlobalPasscode),hashedGlobalPassword)){
-			return true;
+		if (validPassword(GlobalPasscode)){
+			return localPasscodes.containsKey(website);
 		}
 		return false;
+	}
+	public Boolean validPassword(String GlobalPasscode) throws NoSuchAlgorithmException{
+		return Equality(hashFun(GlobalPasscode),hashedGlobalPassword);
 	}
 	private static boolean Equality(byte[] array1,byte[] array2){
 		return Arrays.equals(array1, array2);
