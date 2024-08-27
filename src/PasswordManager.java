@@ -20,7 +20,7 @@ public class PasswordManager {
 		if (localPasscodes.containsKey(website)){
 			throw new Exception("only one website/application per password please");
 		}
-		else if(!Equality(hashFun(GlobalPasscode),hashedGlobalPassword)){
+		else if(!validPassword(GlobalPasscode)){
 			throw new Exception("wrong global password !");
 		}
 		else{
@@ -29,7 +29,7 @@ public class PasswordManager {
 		
 	}
 	public String unveil(String GlobalPasscode,String website) throws Exception {
-		if (canUnveil(GlobalPasscode, website)){ 
+		if (validPassword(GlobalPasscode)){ 
 			if (localPasscodes.containsKey(website)){
 				return new String(AESDecryption.decryptByte(getSymetricKey(GlobalPasscode),localPasscodes.get(website)),StandardCharsets.UTF_8);
 			}

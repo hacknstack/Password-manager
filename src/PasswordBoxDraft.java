@@ -4,11 +4,12 @@ import java.awt.Graphics;
 public class PasswordBoxDraft extends InputBox{
     protected int copyToClipboardWidth;
     private InputBox websiteBoxDraft;
-    private WebsiteBox validBox;
+    private ImageBox validBox;
+    private String relativePath = "pictures/checkmark.png";
     public PasswordBoxDraft(int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
         super("",topX,topY,width,height,backgroundColor,textColor);
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new WebsiteBox("GetAccept", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
+        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,this);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -19,7 +20,7 @@ public class PasswordBoxDraft extends InputBox{
     public PasswordBoxDraft(String message,int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
         super(message,topX,topY,width,height,backgroundColor,textColor);
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new WebsiteBox("GetAccept", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
+        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,this);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -30,7 +31,7 @@ public class PasswordBoxDraft extends InputBox{
     public PasswordBoxDraft(int topX, int topY, int width, int height,int copyToClipboardWidth){
         super("",topX,topY,width,height);
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new WebsiteBox("GetAccept", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
+        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,this);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -41,7 +42,7 @@ public class PasswordBoxDraft extends InputBox{
     public PasswordBox createPasswordBox(){
         return new PasswordBox(showMessage(), topX, topY, width, height, websiteBoxDraft.showMessage(), copyToClipboardWidth);
     }
-    public WebsiteBox validationBox(){
+    public ImageBox validationBox(){
         return validBox;
     }
     /* */
