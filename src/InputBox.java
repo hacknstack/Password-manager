@@ -10,7 +10,7 @@ public class InputBox extends Box{
     @Override
     public boolean isPositionOnTheBox(int x,int y){
         editable = x>=topX && x<=width+topX && y>=topY && y<=topY+height;
-        return x>=topX && x<=width+topX && y>=topY && y<=topY+height;
+        return editable;
     }
     
     public Boolean canEdit(){

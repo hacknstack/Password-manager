@@ -9,7 +9,7 @@ public class PasswordBoxDraft extends InputBox{
     public PasswordBoxDraft(int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
         super("",topX,topY,width,height,backgroundColor,textColor);
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,this);
+        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,()->System.out.printf("swag"));
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -20,7 +20,7 @@ public class PasswordBoxDraft extends InputBox{
     public PasswordBoxDraft(String message,int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
         super(message,topX,topY,width,height,backgroundColor,textColor);
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,this);
+        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,()->System.out.printf("swag"));
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -31,7 +31,7 @@ public class PasswordBoxDraft extends InputBox{
     public PasswordBoxDraft(int topX, int topY, int width, int height,int copyToClipboardWidth){
         super("",topX,topY,width,height);
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,this);
+        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,()->System.out.printf("swag"));
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }

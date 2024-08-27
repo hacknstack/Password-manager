@@ -79,5 +79,7 @@ public class Box {
         drawText(showMessage(), g);
         
     }
+    public void action(){
+    }
     
 }
