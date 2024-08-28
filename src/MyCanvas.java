@@ -49,6 +49,7 @@ public class MyCanvas extends Canvas {
             public void mousePressed(MouseEvent e) {
                 int x = e.getX();
                 int y = e.getY();
+                messageBox.editMessage( "Click here to add!");
             	for(PasswordBox passwordBox : passwordBoxes) {
                 	if(passwordBox.isPositionOnTheBox(x,y)) {
                 		try {
@@ -78,16 +79,14 @@ public class MyCanvas extends Canvas {
                         }
                         break;
                     }
-                    else if(inputBoxCrypted.isPositionOnTheBox(x, y)){
-                        messageBox.editMessage("Write something !");
-                        break;
-                    }
-                    else{
-                        messageBox.editMessage("Click here to add!");
-                        
-                    }
+                    
             	}
-                if (messageBox.isPositionOnTheBox(x, y)){
+                if(inputBoxCrypted.isPositionOnTheBox(x, y)){
+                    inputBoxCrypted.drawBox(getGraphics());
+                    messageBox.editMessage("Write something !");
+                    
+                }
+                else if (messageBox.isPositionOnTheBox(x, y)){
                     if(!temp.isPresent()){
                         prt("I'm not present");
                     }
@@ -100,17 +99,26 @@ public class MyCanvas extends Canvas {
                     draft ->{ if(draft.isPositionOnTheBox(x, y)){
                         messageBox.editMessage("click checkmark to confirm");
                         if(draft.validationBox().isPositionOnTheBox(x, y)){
-                            PasswordBox toAdd=  draft.createPasswordBox();
-                            numberOfPasses+=1;
-                            passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
-                            passwordBoxes[numberOfPasses-1]=toAdd;
                             try {
-                                manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
-                            } catch (Exception e1) {
+                                if(manager.validPassword(password)){
+                                    PasswordBox toAdd=  draft.createPasswordBox();
+                                    numberOfPasses+=1;
+                                    passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
+                                    passwordBoxes[numberOfPasses-1]=toAdd;
+                                    try {
+                                        manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
+                                    } catch (Exception e1) {
+                                        exceptionHandler(e1);
+                                    }
+                                    temp = Optional.empty();
+                                    repaint();
+                                    }
+                                else{
+                                    messageBox.editMessage("main password is wrong, can't add password");
+                                }
+                            } catch (NoSuchAlgorithmException e1) {
                                 exceptionHandler(e1);
                             }
-                            temp = Optional.empty();
-                            repaint();
                         }
                 }});
                 messageBox.drawBox(getGraphics());

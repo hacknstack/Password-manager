@@ -1,17 +1,26 @@
 import java.awt.Color;
 import java.awt.Graphics;
 public class InputBoxCrypted extends InputBox{
-    private String eyeLogo = "pictures/eye.jpg";
+    private String eyeLogoOpened = "pictures/eye.jpg";
+    private String eyeLogoClosed = "pictures/eye-closed.jpg";
     private ImageBox show;
     public boolean viewable=false;
     public InputBoxCrypted(String message,int topX,int topY,int width,int height,Color backgroundColor,Color textColor){
         
         super(message, topX, topY, width, height,backgroundColor,textColor);
-        show = new ImageBox(eyeLogo, topX+width, topY, height, height, ()-> {this.viewable =!this.viewable;});
+        show = new ImageBox(eyeLogoOpened, topX+width, topY, height, height, (Box b)-> {this.viewable =!this.viewable; System.out.printf("swag");
+         if(viewable){ b.editMessage(eyeLogoClosed);}
+        else{
+            b.editMessage(eyeLogoOpened);
+        }});
     }
     public InputBoxCrypted(String message,int topX,int topY,int width,int height){
         super(message,topX,topX,width,height);
-        show = new ImageBox(eyeLogo, topX+width, topY, height, height, ()-> {this.viewable =!this.viewable;});
+        show = new ImageBox(eyeLogoOpened, topX+width, topY, height, height, (Box b)-> {this.viewable =!this.viewable; System.out.printf("swag");
+        if(viewable){ b.editMessage(eyeLogoClosed);}
+       else{
+           b.editMessage(eyeLogoOpened);
+       }});
     }
     @Override
     public void addChar(char c){

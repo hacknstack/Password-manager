@@ -32,7 +32,7 @@ public class ImageBox extends Box{
     public boolean isPositionOnTheBox(int x,int y){
         boolean isOnBox = super.isPositionOnTheBox(x, y);
         if(isOnBox){
-            (action).boxAction();
+            (action).boxAction(this);
         }
         return isOnBox;
     }

@@ -1,4 +1,4 @@
 @FunctionalInterface
 public interface Action {
-    public void boxAction();
+    public void boxAction(Box b);
 }
