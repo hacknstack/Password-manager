@@ -70,5 +70,9 @@ public class PasswordBoxDraft extends InputBox{
         websiteBoxDraft.drawBox(g);
 
     }
+    @Override
+    public Boolean canEdit(){
+        return super.editable||websiteBoxDraft.canEdit();
+    }
 
 }

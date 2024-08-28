@@ -56,7 +56,6 @@ public class Box {
                 
             }
             toDraw.push(s.substring(start,end));
-            System.out.printf(s.substring(start,end)+" to be drawn \n");
             xPos.push(topX+width/2-stringSize(s.substring(start,end),g)/2);
             start=end;
             end+=1;
@@ -66,7 +65,6 @@ public class Box {
         while(!toDraw.isEmpty()){
             int x = xPos.pop();
             int y = Math.round(topY+height*(lines-linePrinted+1)/(lines+1));
-            System.out.printf("Here are the coordinates ("+String.valueOf(x)+ " ,"+String.valueOf(y)+ ")\n");
             g.setColor(textColor);
             g.drawString(toDraw.pop(),x,y);
             linePrinted+=1;

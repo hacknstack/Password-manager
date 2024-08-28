@@ -137,11 +137,15 @@ public class MyCanvas extends Canvas {
                 if (Character.isLetterOrDigit(ch) || Character.isSpaceChar(ch) || isPrintableChar(ch)) {
                     // Only append if it's a printable character
                     inputBoxCrypted.addChar(ch);
-                    temp.ifPresent(draft -> draft.addChar(ch));
-                    password=inputBoxCrypted.showMessageNonCrypted();
-                    // Repaint the canvas to reflect the change
-                    inputBoxCrypted.drawBox(getGraphics());
-                    temp.ifPresent(draft -> draft.drawBox(getGraphics()));
+                    
+                    if(inputBoxCrypted.canEdit()){
+                        password=inputBoxCrypted.showMessageNonCrypted();
+                        inputBoxCrypted.drawBox(getGraphics());
+                    }
+                    temp.ifPresent(draft -> {draft.addChar(ch);
+                    if(draft.canEdit()){
+                        draft.drawBox(getGraphics());
+                    }});
                 }
             }
 
@@ -151,11 +155,14 @@ public class MyCanvas extends Canvas {
                 if (keyCode == KeyEvent.VK_BACK_SPACE) {
                     // Handle backspace to remove the last character
                     inputBoxCrypted.deleteChar();
-                    temp.ifPresent(draft -> draft.deleteChar());
-                    password=inputBoxCrypted.showMessageNonCrypted();
-                    // Repaint the canvas to reflect the change
-                    inputBoxCrypted.drawBox(getGraphics());
-                    temp.ifPresent(draft -> draft.drawBox(getGraphics()));
+                    if(inputBoxCrypted.canEdit()){
+                        password=inputBoxCrypted.showMessageNonCrypted();
+                        inputBoxCrypted.drawBox(getGraphics());
+                    }
+                    temp.ifPresent(draft -> {draft.deleteChar();
+                        if(draft.canEdit()){
+                            draft.drawBox(getGraphics());
+                        }});
                 }
             }
         });
