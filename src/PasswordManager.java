@@ -72,8 +72,7 @@ public class PasswordManager {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[length];
         random.nextBytes(salt);
-        //return Base64.getEncoder().encodeToString(salt);
-		return "wordpass";
+        return Base64.getEncoder().encodeToString(salt);
     }
 	public void dataIn(){
 		String out[] = FileHandler.readFromFile();
