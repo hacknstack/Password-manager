@@ -28,7 +28,7 @@ public class MyCanvas extends Canvas {
     
     
     private int inputBoxHeight = 35;
-    private int numberOfPasses = 0;
+    private int numberOfPasses;
     private int passwordBoxesSpacing = 25;
     private int firstpasswordBoxTopX = 55;
     private int firstpasswordBoxTopY = 50;
@@ -40,9 +40,14 @@ public class MyCanvas extends Canvas {
     public MyCanvas() throws NoSuchAlgorithmException {
         inputBoxCrypted = new InputBoxCrypted(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
-    	passwordBoxes = new PasswordBox[numberOfPasses];
+        manager.dataIn();
+    	passwordBoxes =manager.passwordBoxes(shift,passwordBoxesSpacing+passwordBoxesHeight,firstpasswordBoxTopX,firstpasswordBoxTopY,passwordBoxesWidth,passwordBoxesHeight,copyToClipboardWidth);
+        
+        numberOfPasses=passwordBoxes.length;
+        shift += (passwordBoxesSpacing+passwordBoxesHeight)*numberOfPasses;
         messageBox = new ButtonPasswordBox("Click here to add!",firstpasswordBoxTopX,firstpasswordBoxTopY+shift,passwordBoxesWidth,passwordBoxesHeight,Color.WHITE,Color.BLACK);
         password=inputBoxCrypted.showMessageNonCrypted();
+        
         // Add a mouse listener to handle mouse clicks
         addMouseListener(new MouseAdapter() {
             @Override
@@ -111,6 +116,7 @@ public class MyCanvas extends Canvas {
                                         exceptionHandler(e1);
                                     }
                                     temp = Optional.empty();
+                                    manager.dataOut();
                                     repaint();
                                     }
                                 else{
@@ -161,6 +167,7 @@ public class MyCanvas extends Canvas {
             public void keyPressed(KeyEvent e) {
                 int keyCode = e.getKeyCode();
                 if (keyCode == KeyEvent.VK_BACK_SPACE) {
+                    
                     // Handle backspace to remove the last character
                     inputBoxCrypted.deleteChar();
                     if(inputBoxCrypted.canEdit()){
