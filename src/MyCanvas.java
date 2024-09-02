@@ -151,7 +151,6 @@ public class MyCanvas extends Canvas {
                 if (Character.isLetterOrDigit(ch) || Character.isSpaceChar(ch) || isPrintableChar(ch)) {
                     // Only append if it's a printable character
                     inputBoxCrypted.addChar(ch);
-                    
                     if(inputBoxCrypted.canEdit()){
                         password=inputBoxCrypted.showMessageNonCrypted();
                         inputBoxCrypted.drawBox(getGraphics());
