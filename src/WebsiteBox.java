@@ -20,7 +20,6 @@ public class WebsiteBox extends Box{
             img = ImageIO.read(url);  // Downloads and reads the image
         } catch (IOException e) {
             System.out.println("Image not found for title: " + title);
-            e.printStackTrace();
         }
         return img;
     }

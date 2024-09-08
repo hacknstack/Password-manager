@@ -20,13 +20,12 @@ public class MyCanvas extends Canvas {
     private PasswordManager manager; 
 
 	private InputBoxCrypted inputBoxCrypted;
-    private PasswordBox[] passwordBoxes;
+    private Box[] passwordBoxes;
     private ButtonPasswordBox messageBox;
-    private Optional<PasswordBoxDraft> temp = Optional.empty();
     private String password="password";
     private String cryptedMessage = "###########";
     
-    
+    private PasswordBoxDraft draft;
     private int inputBoxHeight = 35;
     private int numberOfPasses;
     private int passwordBoxesSpacing = 25;
@@ -36,7 +35,7 @@ public class MyCanvas extends Canvas {
     private int passwordBoxesHeight = 50;
     private int copyToClipboardWidth = passwordBoxesHeight;
     private int shift = inputBoxHeight+passwordBoxesSpacing;
-
+    private boolean isTempPresent = false;
     public MyCanvas() throws NoSuchAlgorithmException {
         inputBoxCrypted = new InputBoxCrypted(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
     	manager = new PasswordManager(password);
@@ -49,95 +48,87 @@ public class MyCanvas extends Canvas {
         password=inputBoxCrypted.showMessageNonCrypted();
         
         // Add a mouse listener to handle mouse clicks
+        
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 int x = e.getX();
                 int y = e.getY();
                 messageBox.editMessage( "Click here to add!");
-            	for(PasswordBox passwordBox : passwordBoxes) {
-                	if(passwordBox.isPositionOnTheBox(x,y)) {
-                		try {
-                            passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
-                        } catch (Exception e1) {
-                            exceptionHandler(e1);
-                        }
-                        messageBox.editMessage( "Click here to add!");
-                        passwordBox.drawBox(getGraphics());
-                        break;
-                    }
-                    else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
-                        try {
-                            copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
-                        } catch (Exception e1) {
-                            exceptionHandler(e1);
-                        }
-                        try {
-                            if(manager.canUnveil(password, passwordBox.getWebsite())){
-                                messageBox.editMessage( "Copied!");
-                            }
-                            else{
-                                messageBox.editMessage( "Invalid action!");
-                            }
-                        } catch (NoSuchAlgorithmException e1) {
-                            exceptionHandler(e1);
-                        }
-                        break;
-                    }
-                    
-            	}
-                if(inputBoxCrypted.isPositionOnTheBox(x, y)){
-                    inputBoxCrypted.drawBox(getGraphics());
-                    messageBox.editMessage("Write something !");
-                    
-                }
-                else if (messageBox.isPositionOnTheBox(x, y)){
-                    if(!temp.isPresent()){
-                        prt("I'm not present");
-                    }
-                    if(!temp.isPresent()){
-                        temp = Optional.of(messageBox.newPasswordBoxDraft( passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth));
-                        temp.get().drawBox(getGraphics());
-                    }
-                }
-                temp.ifPresent(
-                    draft ->{ if(draft.isPositionOnTheBox(x, y)){
-                        messageBox.editMessage("click checkmark to confirm");
-                        if(draft.validationBox().isPositionOnTheBox(x, y)){
+            	for(Box box : passwordBoxes) {
+                    if(box instanceof PasswordBox){
+                        PasswordBox passwordBox = (PasswordBox) box;
+                        if(passwordBox.isPositionOnTheBox(x,y)) {
                             try {
-                                if(manager.validPassword(password)){
-                                    PasswordBox toAdd=  draft.createPasswordBox();
-                                    numberOfPasses+=1;
-                                    passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
-                                    passwordBoxes[numberOfPasses-1]=toAdd;
-                                    try {
-                                        manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
-                                    } catch (Exception e1) {
-                                        exceptionHandler(e1);
-                                    }
-                                    temp = Optional.empty();
-                                    manager.dataOut();
-                                    repaint();
-                                    }
+                                passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
+                            } catch (Exception e1) {
+                                exceptionHandler(e1);
+                            }
+                            messageBox.editMessage( "Click here to add!");
+                            passwordBox.drawBox(getGraphics());
+                            break;
+                        }
+                        else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
+                            try {
+                                copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
+                            } catch (Exception e1) {
+                                exceptionHandler(e1);
+                            }
+                            try {
+                                if(manager.canUnveil(password, passwordBox.getWebsite())){
+                                    messageBox.editMessage( "Copied!");
+                                }
                                 else{
-                                    messageBox.editMessage("main password is wrong, can't add password");
+                                    messageBox.editMessage( "Invalid action!");
                                 }
                             } catch (NoSuchAlgorithmException e1) {
                                 exceptionHandler(e1);
                             }
+                            break;
                         }
-                }});
-                messageBox.drawBox(getGraphics());
-            	// Repaint the canvas to reflect the change
+                        
+                    }
+                }
+                    if(inputBoxCrypted.isPositionOnTheBox(x, y)){
+                        inputBoxCrypted.drawBox(getGraphics());
+                        messageBox.editMessage("Write something !");
+                        
+                    }
+                    else if (messageBox.isPositionOnTheBox(x, y)){
+                        if(!isTempPresent){
+                            draft = messageBox.newPasswordBoxDraft( passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth);
+                            draft.drawBox(getGraphics());
+                            isTempPresent=true;
+                        }
+                    }
+                    if(isTempPresent){
+                        if(draft.isPositionOnTheBox(x, y)){
+                            messageBox.editMessage("click checkmark to confirm");
+                            if(draft.validationBox().isPositionOnTheBox(x, y)){
+                                try {
+                                    boxDraftAdd(null);
+                                    isTempPresent=false;
+                                } catch (NoSuchAlgorithmException e1) {
+                                    exceptionHandler(e1);
+                                }
+                            }
+                        }
+                    }
+                    messageBox.drawBox(getGraphics());
+                    // Repaint the canvas to reflect the change
             }
             @Override
             public void mouseReleased(MouseEvent e) {
-            	for(PasswordBox passwordBox : passwordBoxes) {
-                    if(passwordBox.showMessage()!=cryptedMessage){
-                        passwordBox.editMessage(cryptedMessage);
-                        passwordBox.drawBox(getGraphics());
-                        break;
+            	for(Box box : passwordBoxes) {
+                    if(box instanceof PasswordBox){
+                        PasswordBox passwordBox = (PasswordBox) box;
+                        if(passwordBox.showMessage()!=cryptedMessage){
+                            passwordBox.editMessage(cryptedMessage);
+                            passwordBox.drawBox(getGraphics());
+                            break;
+                        }
                     }
+                    
                 	
                 	
                 }
@@ -155,10 +146,12 @@ public class MyCanvas extends Canvas {
                         password=inputBoxCrypted.showMessageNonCrypted();
                         inputBoxCrypted.drawBox(getGraphics());
                     }
-                    temp.ifPresent(draft -> {draft.addChar(ch);
+                    if(isTempPresent){
+                        draft.addChar(ch);
+                    }
                     if(draft.canEdit()){
                         draft.drawBox(getGraphics());
-                    }});
+                    }
                 }
             }
 
@@ -173,13 +166,16 @@ public class MyCanvas extends Canvas {
                         password=inputBoxCrypted.showMessageNonCrypted();
                         inputBoxCrypted.drawBox(getGraphics());
                     }
-                    temp.ifPresent(draft -> {draft.deleteChar();
+                    if(isTempPresent){
+                        draft.deleteChar();
                         if(draft.canEdit()){
                             draft.drawBox(getGraphics());
-                        }});
+                        }
+                    }
                 }
             }
         });
+        
     }
 
     // A helper method to check if a character is printable
@@ -199,7 +195,24 @@ public class MyCanvas extends Canvas {
         messageBox.editMessage("Error : "+e.getMessage());
     }
     
-     
+    private void boxDraftAdd(PasswordBox b) throws NoSuchAlgorithmException{
+        if(manager.validPassword(password)){
+            PasswordBox toAdd=  draft.createPasswordBox();
+            numberOfPasses+=1;
+            passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
+            passwordBoxes[numberOfPasses-1]=toAdd;
+            try {
+                manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
+            } catch (Exception e1) {
+                exceptionHandler(e1);
+            }
+            manager.dataOut();
+            repaint();
+            }
+        else{
+            messageBox.editMessage("main password is wrong, can't add password");
+        }
+    }
 
     @Override
     public void paint(Graphics g) {
@@ -207,13 +220,13 @@ public class MyCanvas extends Canvas {
         inputBoxCrypted.drawBox(g);
         // Set the color for the drawing
         // Draw thoses rectangles
-        for(PasswordBox passwordBox : passwordBoxes) {
+        for(Box box : passwordBoxes) {
 
             //draw password box
-        	passwordBox.drawBox(g);
+        	box.drawBox(g);
         }
-        if(temp.isPresent()){
-            temp.get().drawBox(g);
+        if(isTempPresent){
+            draft.drawBox(g);
         }
         messageBox.drawBox(g);
     }
