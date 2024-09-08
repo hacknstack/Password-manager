@@ -2,10 +2,15 @@ import java.awt.Color;
 import java.awt.Graphics;
 public class PasswordBox extends Box{
     protected int copyToClipboardWidth;
-    private String website;
+    private WebsiteBox websiteBox;
+    private ImageBox editBox;
+    private String editPic = "pictures/edit.jpg";
+    private Box copyToClipboardBox;
     public PasswordBox(String message, int topX, int topY, int width, int height,Color backgroundColor,Color textColor,String website, int copyToClipboardWidth) {
         super(message, topX, topY, width, height,backgroundColor,textColor);
-        this.website=website;
+        this.websiteBox = new WebsiteBox(website,topX+width,topY,height,height,Color.white,Color.RED);
+        this.editBox = new ImageBox(editPic, topX+width+websiteBox.width, topY, height, height, null);
+        this.copyToClipboardBox = new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -16,7 +21,9 @@ public class PasswordBox extends Box{
     }
     public PasswordBox(String message, int topX, int topY, int width, int height,String website, int copyToClipboardWidth) {
         super(message, topX, topY, width, height);
-        this.website=website;
+        this.websiteBox = new WebsiteBox(website,topX+width,topY,height,height,Color.white,Color.RED);
+        this.editBox = new ImageBox(editPic, topX+width+websiteBox.width, topY, height, height, null);
+        this.copyToClipboardBox = new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -25,23 +32,24 @@ public class PasswordBox extends Box{
             +"(take into account extra space for the width because topX is for the normal button)");
         }
     }
-    public Box copyToClipboardBox(String message,Color backgroundColor,Color textColor){
-        return new Box(message, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,backgroundColor,textColor);
-    }
     public Box copyToClipboardBox(){
-        return new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
+        return copyToClipboardBox;
     }
-    public WebsiteBox websiteBox(){
-        return new WebsiteBox(website,topX+width,topY,height,height,Color.white,Color.RED);
+    public ImageBox getEditButton(){
+        return editBox;
     }
     public String getWebsite(){
-        return website;
+        return websiteBox.showMessage();
+    }
+    public PasswordBoxDraft toDraft(String password){
+        return new PasswordBoxDraft(topX, topY, width, height, copyToClipboardWidth);
     }
     @Override
     public void drawBox(Graphics g) {
         super.drawBox(g);
-        copyToClipboardBox().drawBox(g);
-        websiteBox().drawBox(g);
+        copyToClipboardBox.drawBox(g);
+        websiteBox.drawBox(g);
+        editBox.drawBox(g);
     }
 
 }

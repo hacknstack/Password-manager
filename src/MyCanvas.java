@@ -23,7 +23,7 @@ public class MyCanvas extends Canvas {
     private Box[] passwordBoxes;
     private ButtonPasswordBox messageBox;
     private String password="password";
-    private String cryptedMessage = "###########";
+    private String cryptedMessage = "##########";
     
     private PasswordBoxDraft draft;
     private int inputBoxHeight = 35;
@@ -85,6 +85,13 @@ public class MyCanvas extends Canvas {
                                 exceptionHandler(e1);
                             }
                             break;
+                        }
+                        else if(passwordBox.getEditButton().isPositionOnTheBox(x, y)){
+                            try {
+                                boxDraftAdd(passwordBox);
+                            } catch (NoSuchAlgorithmException e1) {
+                                exceptionHandler(e1);
+                            }
                         }
                         
                     }
@@ -197,18 +204,23 @@ public class MyCanvas extends Canvas {
     
     private void boxDraftAdd(PasswordBox b) throws NoSuchAlgorithmException{
         if(manager.validPassword(password)){
-            PasswordBox toAdd=  draft.createPasswordBox();
-            numberOfPasses+=1;
-            passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
-            passwordBoxes[numberOfPasses-1]=toAdd;
-            try {
-                manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
-            } catch (Exception e1) {
-                exceptionHandler(e1);
+            if(b==null){
+                PasswordBox toAdd=  draft.createPasswordBox();
+                numberOfPasses+=1;
+                passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
+                passwordBoxes[numberOfPasses-1]=toAdd;
+                try {
+                    manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
+                } catch (Exception e1) {
+                    exceptionHandler(e1);
+                }
+                manager.dataOut();
+                repaint();
             }
-            manager.dataOut();
-            repaint();
+            else{
+                //todo change to temporary password :) 
             }
+        }
         else{
             messageBox.editMessage("main password is wrong, can't add password");
         }

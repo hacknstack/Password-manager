@@ -7,8 +7,8 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 public class WebsiteBox extends Box{
-    int oldTopY = -1;
-
+    private int oldTopY = -1;
+    private BufferedImage image;
     public WebsiteBox(String message, int topX, int topY, int width, int height,Color backgroundColor,Color textColor) {
         super(message, topX, topY, width, height,backgroundColor, textColor);
     }
@@ -33,21 +33,23 @@ public class WebsiteBox extends Box{
     public void drawBox(Graphics g) {
         if(oldTopY!=topY){
             String title = showMessage();
-            int x = topX;
-            int y = topY;
-            int side = height;
-            BufferedImage image = downloadImageFromTitle(title);
-            if (image != null) {
-                // Get panel dimensions
-
-                // Resize and draw the image in the square
-                g.drawImage(image, x, y, side, side, null);
-            } else {
-                // Fallback if image was not found
-                //BufferedImage image = new BufferedImage(side, side, y);
-                super.drawBox(g);
-            }
-            oldTopY=topY;
+            
+            image = downloadImageFromTitle(title);
+            
         }
+        int x = topX;
+        int y = topY;
+        int side = height;
+        if (image != null) {
+            // Get panel dimensions
+
+            // Resize and draw the image in the square
+            g.drawImage(image, x, y, side, side, null);
+        } else {
+            // Fallback if image was not found
+            //BufferedImage image = new BufferedImage(side, side, y);
+            super.drawBox(g);
+        }
+        oldTopY=topY;
     }
 }
