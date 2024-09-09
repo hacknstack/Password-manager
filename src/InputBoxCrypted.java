@@ -8,7 +8,7 @@ public class InputBoxCrypted extends InputBox{
     public InputBoxCrypted(String message,int topX,int topY,int width,int height,Color backgroundColor,Color textColor){
         
         super(message, topX, topY, width, height,backgroundColor,textColor);
-        show = new ImageBox(eyeLogoOpened, topX+width, topY, height, height, (Box b)-> {this.viewable =!this.viewable; System.out.printf("swag");
+        show = new ImageBox(eyeLogoOpened, topX+width, topY, height, height, (Box b)-> {this.viewable =!this.viewable;
          if(viewable){ b.editMessage(eyeLogoClosed);}
         else{
             b.editMessage(eyeLogoOpened);
@@ -16,7 +16,7 @@ public class InputBoxCrypted extends InputBox{
     }
     public InputBoxCrypted(String message,int topX,int topY,int width,int height){
         super(message,topX,topX,width,height);
-        show = new ImageBox(eyeLogoOpened, topX+width, topY, height, height, (Box b)-> {this.viewable =!this.viewable; System.out.printf("swag");
+        show = new ImageBox(eyeLogoOpened, topX+width, topY, height, height, (Box b)-> {this.viewable =!this.viewable; 
         if(viewable){ b.editMessage(eyeLogoClosed);}
        else{
            b.editMessage(eyeLogoOpened);
