@@ -46,7 +46,7 @@ public class ImageBox extends Box{
                 (action).boxAction(this);
             }
             catch(Exception e){
-                System.out.printf("undefined image action");
+                System.out.printf(" undefined image action ");
             }
         }
         return isOnBox;

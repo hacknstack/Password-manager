@@ -52,7 +52,6 @@ public class InputBoxCrypted extends InputBox{
     }
     @Override
     public boolean isPositionOnTheBox(int x,int y){
-        System.out.printf("clicked on -_-    ");
         boolean stuff = show.isPositionOnTheBox(x, y);
         return super.isPositionOnTheBox(x, y)||stuff;
     }

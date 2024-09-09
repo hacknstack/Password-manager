@@ -9,7 +9,7 @@ public class PasswordBox extends Box{
     public PasswordBox(String message, int topX, int topY, int width, int height,Color backgroundColor,Color textColor,String website, int copyToClipboardWidth) {
         super(message, topX, topY, width, height,backgroundColor,textColor);
         this.websiteBox = new WebsiteBox(website,topX+width,topY,height,height,Color.white,Color.RED);
-        this.editBox = new ImageBox(editPic, topX+width+websiteBox.width, topY, height, height, null);
+        this.editBox = new ImageBox(editPic, topX+width+websiteBox.width, topY, height, height,  (Box b)-> {});
         this.copyToClipboardBox = new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
@@ -22,7 +22,7 @@ public class PasswordBox extends Box{
     public PasswordBox(String message, int topX, int topY, int width, int height,String website, int copyToClipboardWidth) {
         super(message, topX, topY, width, height);
         this.websiteBox = new WebsiteBox(website,topX+width,topY,height,height,Color.white,Color.RED);
-        this.editBox = new ImageBox(editPic, topX+width+websiteBox.width, topY, height, height, null);
+        this.editBox = new ImageBox(editPic, topX+width+websiteBox.width, topY, height, height, (Box b)-> {});
         this.copyToClipboardBox = new Box("copy", topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,Color.CYAN,this.textColor);
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
@@ -42,7 +42,7 @@ public class PasswordBox extends Box{
         return websiteBox.showMessage();
     }
     public PasswordBoxDraft toDraft(String password){
-        return new PasswordBoxDraft(topX, topY, width, height, copyToClipboardWidth);
+        return new PasswordBoxDraft(topX, topY, width, height, copyToClipboardWidth,showMessage(),websiteBox.showMessage());
     }
     @Override
     public void drawBox(Graphics g) {

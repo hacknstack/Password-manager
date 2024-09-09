@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.ECFieldF2m;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -87,11 +88,7 @@ public class MyCanvas extends Canvas {
                             break;
                         }
                         else if(passwordBox.getEditButton().isPositionOnTheBox(x, y)){
-                            try {
-                                boxDraftAdd(passwordBox);
-                            } catch (NoSuchAlgorithmException e1) {
-                                exceptionHandler(e1);
-                            }
+                            boxDraftAdd(passwordBox);
                         }
                         
                     }
@@ -113,7 +110,7 @@ public class MyCanvas extends Canvas {
                             messageBox.editMessage("click checkmark to confirm");
                             if(draft.validationBox().isPositionOnTheBox(x, y)){
                                 try {
-                                    boxDraftAdd(null);
+                                    fromDraftToPass();
                                     isTempPresent=false;
                                 } catch (NoSuchAlgorithmException e1) {
                                     exceptionHandler(e1);
@@ -202,27 +199,55 @@ public class MyCanvas extends Canvas {
         messageBox.editMessage("Error : "+e.getMessage());
     }
     
-    private void boxDraftAdd(PasswordBox b) throws NoSuchAlgorithmException{
+    private void fromDraftToPass() throws NoSuchAlgorithmException{
+        
         if(manager.validPassword(password)){
-            if(b==null){
-                PasswordBox toAdd=  draft.createPasswordBox();
-                numberOfPasses+=1;
-                passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
-                passwordBoxes[numberOfPasses-1]=toAdd;
-                try {
-                    manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
-                } catch (Exception e1) {
-                    exceptionHandler(e1);
-                }
-                manager.dataOut();
-                repaint();
+            
+            PasswordBox toAdd=  draft.createPasswordBox();
+            numberOfPasses+=1;
+            passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
+            passwordBoxes[numberOfPasses-1]=toAdd;
+            try {
+                manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
+            } catch (Exception e1) {
+                exceptionHandler(e1);
             }
-            else{
-                //todo change to temporary password :) 
-            }
+            manager.dataOut();
+            repaint();
+            
+            
         }
         else{
             messageBox.editMessage("main password is wrong, can't add password");
+        }
+    }
+    private void boxDraftAdd(PasswordBox p){
+        int index=-1;
+        for (int i=0;i<numberOfPasses;i++){
+            if (passwordBoxes[i]==p){
+                index =i;
+                break;
+            }
+        }
+        if(index!=-1){
+            try {
+                if(manager.canUnveil(password, p.getWebsite())){
+                    String clearPassword=manager.unveil(password, p.getWebsite());
+                    System.out.println(p.toDraft(clearPassword).getClass().getName());
+                    passwordBoxes[index]=p.toDraft(clearPassword);
+                }
+                else{
+                    exceptionHandler(new Exception("error in main password"));
+                }
+            } catch (Exception e) {
+                exceptionHandler(e);
+            }
+            
+            
+            
+        }
+        else{
+            exceptionHandler(new Exception("error in flow of state"));
         }
     }
 

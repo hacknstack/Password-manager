@@ -17,9 +17,9 @@ public class PasswordBoxDraft extends InputBox{
             throw new IllegalArgumentException("copy to clipboard button must still entirely be visible (take into account extra space for the width because topX is for the normal button)");
         }
     }
-    public PasswordBoxDraft(String message,int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
-        super(message,topX,topY,width,height,backgroundColor,textColor);
-        websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
+    public PasswordBoxDraft(int topX, int topY, int width, int height, int copyToClipboardWidth,String message,String website){
+        super(message,topX,topY,width,height);
+        websiteBoxDraft= new InputBox(website,topX+width,topY,height,height,Color.gray,Color.RED);
         validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
