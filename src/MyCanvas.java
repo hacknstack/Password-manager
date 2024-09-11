@@ -23,10 +23,11 @@ public class MyCanvas extends Canvas {
 	private InputBoxCrypted inputBoxCrypted;
     private Box[] passwordBoxes;
     private ButtonPasswordBox messageBox;
+    private PasswordBoxDraft draft;
     private String password="password";
     private String cryptedMessage = "##########";
     
-    private PasswordBoxDraft draft;
+
     private int inputBoxHeight = 35;
     private int numberOfPasses;
     private int passwordBoxesSpacing = 25;
@@ -36,6 +37,7 @@ public class MyCanvas extends Canvas {
     private int passwordBoxesHeight = 50;
     private int copyToClipboardWidth = passwordBoxesHeight;
     private int shift = inputBoxHeight+passwordBoxesSpacing;
+    private int draftIndex =-1;
     private boolean isTempPresent = false;
     public MyCanvas() throws NoSuchAlgorithmException {
         inputBoxCrypted = new InputBoxCrypted(password,firstpasswordBoxTopX-copyToClipboardWidth,0,passwordBoxesWidth+copyToClipboardWidth,inputBoxHeight);
@@ -202,52 +204,64 @@ public class MyCanvas extends Canvas {
     private void fromDraftToPass() throws NoSuchAlgorithmException{
         
         if(manager.validPassword(password)){
-            
             PasswordBox toAdd=  draft.createPasswordBox();
-            numberOfPasses+=1;
-            passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
-            passwordBoxes[numberOfPasses-1]=toAdd;
+            if(draftIndex==-1){
+                
+                numberOfPasses+=1;
+                passwordBoxes = Arrays.copyOf(passwordBoxes,numberOfPasses);
+                passwordBoxes[numberOfPasses-1]=toAdd;
+            }
+            else{
+                passwordBoxes[draftIndex] = toAdd;
+            }
+            
             try {
                 manager.addLocalPasscode(toAdd.getWebsite(),toAdd.showMessage(),password);
             } catch (Exception e1) {
                 exceptionHandler(e1);
             }
+            draftIndex=-1;
             manager.dataOut();
             repaint();
-            
-            
         }
         else{
             messageBox.editMessage("main password is wrong, can't add password");
         }
     }
     private void boxDraftAdd(PasswordBox p){
-        int index=-1;
-        for (int i=0;i<numberOfPasses;i++){
-            if (passwordBoxes[i]==p){
-                index =i;
-                break;
-            }
-        }
-        if(index!=-1){
-            try {
-                if(manager.canUnveil(password, p.getWebsite())){
-                    String clearPassword=manager.unveil(password, p.getWebsite());
-                    System.out.println(p.toDraft(clearPassword).getClass().getName());
-                    passwordBoxes[index]=p.toDraft(clearPassword);
+        if(!isTempPresent){
+            int index=-1;
+            for (int i=0;i<numberOfPasses;i++){
+                if (passwordBoxes[i]==p){
+                    index =i;
+                    break;
                 }
-                else{
-                    exceptionHandler(new Exception("error in main password"));
-                }
-            } catch (Exception e) {
-                exceptionHandler(e);
             }
-            
-            
-            
-        }
-        else{
-            exceptionHandler(new Exception("error in flow of state"));
+            if(index!=-1){
+                try {
+                    if(manager.canUnveil(password, p.getWebsite())){
+                        String clearPassword=manager.unveil(password, p.getWebsite());
+                        System.out.println("the type is " + p.toDraft(clearPassword).getClass().getName());
+                        draft=p.toDraft(clearPassword);
+                        isTempPresent=true;
+                        draftIndex=index;
+                        passwordBoxes[index]=null;
+                        manager.removeLocalPasscode(p.getWebsite(), password);
+                        repaint();
+                    }
+                    else{
+                        exceptionHandler(new Exception("error in main password"));
+                    }
+                } catch (Exception e) {
+                    exceptionHandler(e);
+                }
+                
+                
+                
+            }
+            else{
+                exceptionHandler(new Exception("error in flow of state"));
+            }
         }
     }
 
@@ -260,9 +274,13 @@ public class MyCanvas extends Canvas {
         for(Box box : passwordBoxes) {
 
             //draw password box
-        	box.drawBox(g);
+            if(box instanceof PasswordBox){
+                box.drawBox(g);
+            }
+        	
         }
         if(isTempPresent){
+            System.out.printf("drawn normally");
             draft.drawBox(g);
         }
         messageBox.drawBox(g);

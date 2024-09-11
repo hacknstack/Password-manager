@@ -42,7 +42,7 @@ public class PasswordBox extends Box{
         return websiteBox.showMessage();
     }
     public PasswordBoxDraft toDraft(String password){
-        return new PasswordBoxDraft(topX, topY, width, height, copyToClipboardWidth,showMessage(),websiteBox.showMessage());
+        return new PasswordBoxDraft(topX, topY, width, height,copyToClipboardWidth, password,websiteBox.showMessage());
     }
     @Override
     public void drawBox(Graphics g) {

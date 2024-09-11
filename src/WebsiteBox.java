@@ -33,9 +33,7 @@ public class WebsiteBox extends Box{
     public void drawBox(Graphics g) {
         if(oldTopY!=topY){
             String title = showMessage();
-            
             image = downloadImageFromTitle(title);
-            
         }
         int x = topX;
         int y = topY;

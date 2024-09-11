@@ -35,6 +35,18 @@ public class PasswordManager {
 		}
 		
 	}
+	public void removeLocalPasscode(String website,String GlobalPasscode) throws Exception{
+		
+		if(!validPassword(GlobalPasscode)){
+			throw new Exception("wrong global password !");
+		}
+		else if (!localPasscodes.containsKey(website)){
+			throw new Exception("this website isn't found");
+		}
+		else{
+			localPasscodes.remove(website);
+		}
+	}
 	public String unveil(String GlobalPasscode,String website) throws Exception {
 		if (validPassword(GlobalPasscode)){ 
 			if (localPasscodes.containsKey(website)){

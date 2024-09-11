@@ -5,11 +5,14 @@ public class PasswordBoxDraft extends InputBox{
     protected int copyToClipboardWidth;
     private InputBox websiteBoxDraft;
     private ImageBox validBox;
-    private String relativePath = "pictures/checkmark.png";
+    private ImageBox crossBox;
+    private String checkmarkPath = "pictures/checkmark.jpg";
+    private String crossPath ="pictures/cross.jpg";
     public PasswordBoxDraft(int topX, int topY, int width, int height,Color backgroundColor,Color textColor, int copyToClipboardWidth){
         super("",topX,topY,width,height,backgroundColor,textColor);
+        validBox=new ImageBox(checkmarkPath , topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
+        crossBox = new ImageBox(crossPath, topX+width+height, topY, height, height,(Box b)-> {this.topX=-1; this.topY=-1;});
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -19,8 +22,9 @@ public class PasswordBoxDraft extends InputBox{
     }
     public PasswordBoxDraft(int topX, int topY, int width, int height, int copyToClipboardWidth,String message,String website){
         super(message,topX,topY,width,height);
+        validBox=new ImageBox(checkmarkPath , topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
         websiteBoxDraft= new InputBox(website,topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
+        crossBox = new ImageBox(crossPath, topX+width+height, topY, height, height,(Box b)-> {this.topX=-1; this.topY=-1;});
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -30,8 +34,9 @@ public class PasswordBoxDraft extends InputBox{
     }
     public PasswordBoxDraft(int topX, int topY, int width, int height,int copyToClipboardWidth){
         super("",topX,topY,width,height);
+        validBox=new ImageBox(checkmarkPath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
         websiteBoxDraft= new InputBox("",topX+width,topY,height,height,Color.gray,Color.RED);
-        validBox=new ImageBox(relativePath, topX-copyToClipboardWidth, topY, copyToClipboardWidth, height,(Box b)->System.out.printf("swag"));
+        crossBox = new ImageBox(crossPath, topX+width+height, topY, height, height,(Box b)-> {this.topX=-1; this.topY=-1;});
         if(topX-copyToClipboardWidth>0){
             this.copyToClipboardWidth = copyToClipboardWidth;
         }
@@ -50,8 +55,9 @@ public class PasswordBoxDraft extends InputBox{
     public boolean isPositionOnTheBox(int x,int y){
         boolean boxClicked = super.isPositionOnTheBox(x, y);
         boolean websiteBoxClicked = websiteBoxDraft.isPositionOnTheBox(x, y);
-        boolean copyToClipboardBoxClicked = validBox.isPositionOnTheBox(x, y);
-        return boxClicked||websiteBoxClicked||copyToClipboardBoxClicked;
+        boolean validationBoxClicked = validBox.isPositionOnTheBox(x, y);
+        boolean crossBoxClicked = validBox.isPositionOnTheBox(x, y);
+        return boxClicked||websiteBoxClicked||validationBoxClicked||crossBoxClicked;
     }
     @Override
     public void addChar(char c){
@@ -68,6 +74,7 @@ public class PasswordBoxDraft extends InputBox{
         super.drawBox(g);
         validBox.drawBox(g);
         websiteBoxDraft.drawBox(g);
+        crossBox.drawBox(g);
 
     }
     @Override
