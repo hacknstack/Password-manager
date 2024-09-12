@@ -32,6 +32,12 @@ public class PasswordBox extends Box{
             +"(take into account extra space for the width because topX is for the normal button)");
         }
     }
+    public void shiftY(int vertical){
+        copyToClipboardBox.topY+=vertical;
+        this.topY+=vertical;
+        websiteBox.topY+=vertical;
+        editBox.topY+=vertical;
+    }
     public Box copyToClipboardBox(){
         return copyToClipboardBox;
     }

@@ -24,10 +24,8 @@ public class MyCanvas extends Canvas {
     private Box[] passwordBoxes;
     private ButtonPasswordBox messageBox;
     private PasswordBoxDraft draft;
-    private String password="password";
+    private String password = "password";
     private String cryptedMessage = "##########";
-    
-
     private int inputBoxHeight = 35;
     private int numberOfPasses;
     private int passwordBoxesSpacing = 25;
@@ -58,56 +56,14 @@ public class MyCanvas extends Canvas {
                 int x = e.getX();
                 int y = e.getY();
                 messageBox.editMessage( "Click here to add!");
-            	for(Box box : passwordBoxes) {
-                    if(box instanceof PasswordBox){
-                        PasswordBox passwordBox = (PasswordBox) box;
-                        if(passwordBox.isPositionOnTheBox(x,y)) {
-                            try {
-                                passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
-                            } catch (Exception e1) {
-                                exceptionHandler(e1);
-                            }
-                            messageBox.editMessage( "Click here to add!");
-                            passwordBox.drawBox(getGraphics());
-                            break;
-                        }
-                        else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
-                            try {
-                                copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
-                            } catch (Exception e1) {
-                                exceptionHandler(e1);
-                            }
-                            try {
-                                if(manager.canUnveil(password, passwordBox.getWebsite())){
-                                    messageBox.editMessage( "Copied!");
-                                }
-                                else{
-                                    messageBox.editMessage( "Invalid action!");
-                                }
-                            } catch (NoSuchAlgorithmException e1) {
-                                exceptionHandler(e1);
-                            }
-                            break;
-                        }
-                        else if(passwordBox.getEditButton().isPositionOnTheBox(x, y)){
-                            boxDraftAdd(passwordBox);
-                        }
-                        
-                    }
-                }
+            	
                     if(inputBoxCrypted.isPositionOnTheBox(x, y)){
                         inputBoxCrypted.drawBox(getGraphics());
                         messageBox.editMessage("Write something !");
                         
                     }
-                    else if (messageBox.isPositionOnTheBox(x, y)){
-                        if(!isTempPresent){
-                            draft = messageBox.newPasswordBoxDraft( passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth);
-                            draft.drawBox(getGraphics());
-                            isTempPresent=true;
-                        }
-                    }
-                    if(isTempPresent){
+                    
+                    else if(isTempPresent){
                         if(draft.isPositionOnTheBox(x, y)){
                             messageBox.editMessage("click checkmark to confirm");
                             if(draft.validationBox().isPositionOnTheBox(x, y)){
@@ -118,6 +74,79 @@ public class MyCanvas extends Canvas {
                                     exceptionHandler(e1);
                                 }
                             }
+                            else if(draft.crossBox().isPositionOnTheBox(x, y)){
+                                System.out.printf("safwafwaf");
+                                draft=null;
+                                isTempPresent=false;
+                                if(draftIndex!=-1){
+                                    // Create a new array of size one less than the original
+                                    Box[] newArray = new PasswordBox[numberOfPasses - 1];
+                                    numberOfPasses-=1;
+
+                                    // Copy elements before the index
+                                    for (int i = 0; i < draftIndex; i++) {
+                                        newArray[i] = passwordBoxes[i];
+                                    }
+
+                                    // Copy elements after the index
+                                    for (int i = draftIndex; i < numberOfPasses; i++) {
+                                        PasswordBox newer = (PasswordBox) passwordBoxes[i + 1];
+                                        newer.shiftY(-(passwordBoxesSpacing+passwordBoxesHeight));
+                                        newArray[i] = passwordBoxes[i + 1];
+                                    }
+                                    passwordBoxes=newArray;
+                                }
+                                messageBox.topY-=passwordBoxesSpacing+passwordBoxesHeight;
+                                draft=null;
+                                manager.dataOut();
+                                
+                            }
+                            draftIndex=-1;
+                            repaint();
+                        }
+                    }
+                    else if (messageBox.isPositionOnTheBox(x, y)){
+                        if(!isTempPresent){
+                            draft = messageBox.newPasswordBoxDraft( passwordBoxesSpacing+passwordBoxesHeight, copyToClipboardWidth);
+                            draft.drawBox(getGraphics());
+                            isTempPresent=true;
+                        }
+                    }
+                    for(Box box : passwordBoxes) {
+                        if(box instanceof PasswordBox){
+                            PasswordBox passwordBox = (PasswordBox) box;
+                            if(passwordBox.isPositionOnTheBox(x,y)) {
+                                try {
+                                    passwordBox.editMessage( manager.unveil(password,passwordBox.getWebsite()));
+                                } catch (Exception e1) {
+                                    exceptionHandler(e1);
+                                }
+                                messageBox.editMessage( "Click here to add!");
+                                passwordBox.drawBox(getGraphics());
+                                break;
+                            }
+                            else if(passwordBox.copyToClipboardBox().isPositionOnTheBox(x,y)){
+                                try {
+                                    copyToClipboard(manager.unveil(password,passwordBox.getWebsite()));
+                                } catch (Exception e1) {
+                                    exceptionHandler(e1);
+                                }
+                                try {
+                                    if(manager.canUnveil(password, passwordBox.getWebsite())){
+                                        messageBox.editMessage( "Copied!");
+                                    }
+                                    else{
+                                        messageBox.editMessage( "Invalid action!");
+                                    }
+                                } catch (NoSuchAlgorithmException e1) {
+                                    exceptionHandler(e1);
+                                }
+                                break;
+                            }
+                            else if(passwordBox.getEditButton().isPositionOnTheBox(x, y)){
+                                boxDraftAdd(passwordBox);
+                            }
+                            
                         }
                     }
                     messageBox.drawBox(getGraphics());
@@ -220,9 +249,7 @@ public class MyCanvas extends Canvas {
             } catch (Exception e1) {
                 exceptionHandler(e1);
             }
-            draftIndex=-1;
             manager.dataOut();
-            repaint();
         }
         else{
             messageBox.editMessage("main password is wrong, can't add password");
@@ -280,7 +307,6 @@ public class MyCanvas extends Canvas {
         	
         }
         if(isTempPresent){
-            System.out.printf("drawn normally");
             draft.drawBox(g);
         }
         messageBox.drawBox(g);
